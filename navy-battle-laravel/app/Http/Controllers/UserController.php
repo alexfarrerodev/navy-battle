@@ -7,22 +7,14 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
     /**
-     * Obtener listado de usuarios
+     * Registrar un nuevo usuario
      */
-    public function index()
-    {
-        $users = User::with('stats')->get();
-        return response()->json($users);
-    }
-
-    /**
-     * Almacenar un nuevo usuario
-     */
-    public function store(Request $request)
+    public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'username' => 'required|string|max:50|unique:users',
@@ -48,21 +40,94 @@ class UserController extends Controller
             'hits' => 0
         ]);
 
-        return response()->json($user, 201);
+        // Crear token de acceso
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'user' => $user,
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+        ], 201);
     }
 
     /**
-     * Mostrar un usuario específico
+     * Iniciar sesión
      */
+    public function login(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Buscar usuario por email
+        $user = User::where('email', $request->email)->first();
+        
+        // Verificar si el usuario existe y la contraseña es correcta
+        if (!$user || !Hash::check($request->password, $user->password_hash)) {
+            return response()->json([
+                'message' => 'Credenciales incorrectas'
+            ], 401);
+        }
+        
+        // Actualizar último login
+        $user->last_login = now();
+        $user->save();
+
+        // Crear nuevo token
+        $token = $user->createToken('auth_token')->plainTextToken;
+        
+        return response()->json([
+            'user' => $user,
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+        ]);
+    }
+
+    /**
+     * Cerrar sesión
+     */
+    public function logout(Request $request)
+    {
+        // Revocar todos los tokens del usuario actual
+        $request->user()->tokens()->delete();
+        
+        return response()->json([
+            'message' => 'Sesión cerrada correctamente'
+        ]);
+    }
+
+    /**
+     * Obtener usuario actual
+     */
+    public function me(Request $request)
+    {
+        return response()->json($request->user()->load(['stats', 'ranking']));
+    }
+
+    // Los métodos existentes permanecen igual...
+    public function index()
+    {
+        $users = User::with('stats')->get();
+        return response()->json($users);
+    }
+
+    public function store(Request $request)
+    {
+        // Este método puede redirigir al register para mantener coherencia
+        return $this->register($request);
+    }
+
     public function show($id)
     {
         $user = User::with(['stats', 'games', 'ranking'])->findOrFail($id);
         return response()->json($user);
     }
 
-    /**
-     * Actualizar un usuario específico
-     */
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
@@ -94,9 +159,6 @@ class UserController extends Controller
         return response()->json($user);
     }
 
-    /**
-     * Eliminar un usuario
-     */
     public function destroy($id)
     {
         $user = User::findOrFail($id);
