@@ -2,12 +2,12 @@
 
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\UserController;
-use App\Http\Controllers\API\UserStatController;
-use App\Http\Controllers\API\GameController;
-use App\Http\Controllers\API\BoardController;
-use App\Http\Controllers\API\ShipController;
-use App\Http\Controllers\API\RankingController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserStatController;
+use App\Http\Controllers\GameController;
+use App\Http\Controllers\BoardController;
+use App\Http\Controllers\ShipController;
+use App\Http\Controllers\RankingController;
 
 /*
 |--------------------------------------------------------------------------
