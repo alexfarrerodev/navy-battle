@@ -25,8 +25,12 @@ export class RegisterFormComponent {
 
 
   sendform(){
-    alert
-    console.log(this.form.value)
+    if (this.form.valid) {
+      console.log('Submitted Form :', this.form.value);
+    } else {
+      console.log('Invalid Form');
+    }
+
   }
 
   confirmPassword(){
@@ -34,7 +38,7 @@ export class RegisterFormComponent {
       this.passwordConfirmed = true
       return this.passwordConfirmed
     }else{
-      return "Password ❌❌"
+      return "❌Incorrectly Password❌"
     }
   }
 }
