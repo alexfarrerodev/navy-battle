@@ -54,9 +54,8 @@ Route::get('users/{userId}/ranking', [RankingController::class, 'show']);
 Route::put('users/{userId}/ranking', [RankingController::class, 'updateOrCreate']);
 
 
-Route::group(['middleware' => ['web', 'excludeCsrf']], function () {
-    Route::post('auth/register', [UserController::class, 'register']);
-});
+
+Route::post('auth/register', [UserController::class, 'register']);
 
 Route::post('auth/login', [UserController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
