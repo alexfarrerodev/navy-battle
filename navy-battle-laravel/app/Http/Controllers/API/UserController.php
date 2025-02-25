@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -16,6 +17,8 @@ class UserController extends Controller
      */
     public function register(Request $request)
     {
+        
+        try{
         $validator = Validator::make($request->all(), [
             'username' => 'required|string|max:50|unique:users',
             'email' => 'required|string|email|max:100|unique:users',
@@ -48,6 +51,9 @@ class UserController extends Controller
             'access_token' => $token,
             'token_type' => 'Bearer',
         ], 201);
+    }catch (\Exception $e){
+        return response()->json($e->getMessage());
+    }
     }
 
     /**

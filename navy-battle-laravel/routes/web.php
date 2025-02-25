@@ -53,4 +53,19 @@ Route::get('rankings', [RankingController::class, 'index']);
 Route::get('users/{userId}/ranking', [RankingController::class, 'show']);
 Route::put('users/{userId}/ranking', [RankingController::class, 'updateOrCreate']);
 
+
+
+Route::post('auth/register', [UserController::class, 'register']);
+
+Route::post('auth/login', [UserController::class, 'login']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('auth/logout', [UserController::class, 'logout']);
+    Route::get('auth/me', [UserController::class, 'me']);
+});
+
+// Ruta para iniciar una partida
+Route::post('games/start', [GameController::class, 'startNewGame']);
+// Ruta para finalizar una partida
+Route::post('games/{gameId}/finish', [GameController::class, 'finishGame']);
+
 // }); // Cierre del middleware auth:sanctum
