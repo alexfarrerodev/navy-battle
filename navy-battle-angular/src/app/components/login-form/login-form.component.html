@@ -1,0 +1,16 @@
+<form [formGroup]="form" (ngSubmit)="sendForm()"> 
+    <p>NAME:</p>
+    <input type="text" formControlName="name" placeholder="Name"><br>
+  
+    <p>EMAIL:</p>
+    <input type="email" formControlName="email" placeholder="Email"><br>
+  
+    <p>PASSWORD:</p>
+    <input type="password" formControlName="password" placeholder="Password"><br>
+  
+    <p>REMEMBER USER:</p>
+    <input type="checkbox" formControlName="rememberUser"><br>
+  
+    <button type="submit">Submit</button>
+  </form>
+  
