@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Game;
 use App\Models\Board;
 use App\Models\Ship;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class GameHistoryController extends Controller
