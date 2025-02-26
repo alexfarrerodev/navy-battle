@@ -6,7 +6,6 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class NavalApiService {
-
   private apiUrl = 'http://localhost:8000';
 
   constructor(private http: HttpClient) { }
@@ -17,6 +16,7 @@ export class NavalApiService {
     };
   }
 
+  // Authentication endpoints
   register(username: string, email: string, password: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/auth/register`, { username, email, password });
   }
@@ -25,6 +25,7 @@ export class NavalApiService {
     return this.http.post(`${this.apiUrl}/auth/login`, { email, password });
   }
 
+  // Game management endpoints
   startGame(token: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/games/start`, {}, this.getAuthHeaders(token));
   }
@@ -41,11 +42,34 @@ export class NavalApiService {
     return this.http.get(`${this.apiUrl}/games/${gameId}/state`, this.getAuthHeaders(token));
   }
 
+  // User statistics endpoints
   getUserStats(userId: number, token: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/users/${userId}/stats`, this.getAuthHeaders(token));
   }
 
-  getRankings(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/rankings`);
+  // Ranking endpoints
+  getRankings(token: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/rankings`, this.getAuthHeaders(token));
+  }
+
+  // Game history endpoints
+  getGameHistory(token: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/games/history`, this.getAuthHeaders(token));
+  }
+
+  getActiveGames(token: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/games/history/active`, this.getAuthHeaders(token));
+  }
+
+  getCompletedGames(token: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/games/history/completed`, this.getAuthHeaders(token));
+  }
+
+  resumeGame(gameId: number, token: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/games/${gameId}/resume`, this.getAuthHeaders(token));
+  }
+
+  finishGame(gameId: number, token: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/games/${gameId}/finish`, {}, this.getAuthHeaders(token));
   }
 }
