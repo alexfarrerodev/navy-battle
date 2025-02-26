@@ -14,6 +14,7 @@ use App\Http\Controllers\GameHistoryController;
 |--------------------------------------------------------------------------
 */
 
+
 // Fix for login route not defined error
 Route::get('login', function(){
     return response()->json(['message' => 'Please login to continue'], 401);

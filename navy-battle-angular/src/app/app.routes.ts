@@ -5,6 +5,7 @@ import { AboutComponent } from './components/about/about.component';
 import { GamesComponent } from './components/games/games.component';
 import { RegisterFormComponent } from './components/register-form/register-form.component';
 import { LoginFormComponent } from './components/login-form/login-form.component';
+import { GameBoardComponent } from './components/game-board/game-board.component';
 
 export const routes: Routes = [
     {path: "", redirectTo: "home", pathMatch: "full"},
@@ -13,5 +14,6 @@ export const routes: Routes = [
     {path: "games", component: GamesComponent},
     {path: "register", component: RegisterFormComponent},
     {path: "login", component: LoginFormComponent},
+    {path: "game-board", component: GameBoardComponent},
     {path: "**", component: Nf404Component}
 ];
