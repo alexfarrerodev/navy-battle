@@ -1,16 +1,39 @@
-<form [formGroup]="form" (ngSubmit)="sendForm()"> 
-    <p>NAME:</p>
-    <input type="text" formControlName="name" placeholder="Name"><br>
-  
-    <p>EMAIL:</p>
-    <input type="email" formControlName="email" placeholder="Email"><br>
-  
-    <p>PASSWORD:</p>
-    <input type="password" formControlName="password" placeholder="Password"><br>
-  
-    <p>REMEMBER USER:</p>
-    <input type="checkbox" formControlName="rememberUser"><br>
-  
-    <button type="submit">Submit</button>
-  </form>
-  
+<form [formGroup]="form" (ngSubmit)="sendForm()" class="max-w-md mx-auto p-6 bg-white shadow-lg rounded-lg">
+  <h1>LOGIN USER</h1>
+  <!-- EMAIL -->
+  <label class="block mb-2 text-gray-700 font-semibold">EMAIL:</label>
+  <input 
+    formControlName="email" 
+    type="email" 
+    placeholder="Email" 
+    class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+  <div class="text-red-500 text-sm mt-1" *ngIf="form.controls['email'].invalid && form.controls['email'].touched">
+    ❌ Please enter a valid email.
+  </div>
+  <br><br>
+
+  <!-- PASSWORD -->
+  <label class="block mt-4 mb-2 text-gray-700 font-semibold">PASSWORD:</label>
+  <input 
+    formControlName="password" 
+    type="password" 
+    placeholder="Password" 
+    class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+  <div class="text-red-500 text-sm mt-1" *ngIf="form.controls['password'].invalid && form.controls['password'].touched">
+    ❌ Password is required (min. 6 characters).
+  </div>
+  <br><br>
+  <!-- REMEMBER ME -->
+  <label class="block mt-4 text-gray-700 font-semibold">
+    <input formControlName="rememberMe" type="checkbox" class="mr-2">
+    Remember me
+  </label>
+  <br><br>
+  <!-- SUBMIT BUTTON -->
+  <button 
+    type="submit" 
+    class="w-full mt-6 p-3 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition"
+    [disabled]="form.invalid">
+    Login
+  </button>
+</form>
