@@ -1,56 +1,95 @@
-<form [formGroup]="form" (ngSubmit)="sendform()">
-    <p>NAME:</p>
-    <input formControlName="name" placeholder="Name">
-    <div class="text-red-400 text-sm" *ngIf="form.controls['name'].invalid && form.controls['name'].touched">
-      ❌ Name is required and must be at least 3 characters.
-    </div>
-  
-  
-    <p>EMAIL:</p>
-    <input formControlName="email" type="email" placeholder="Email">
-    <div class="text-red-400 text-sm" *ngIf="form.controls['email'].invalid && form.controls['email'].touched">
-      ❌ It must be a valid email.
-    </div>
-  
-    <p>PASSWORD</p><br>
-    <input formControlName="password1" type="password" placeholder="Password">
-    <div class="text-red-400 text-sm" *ngIf="form.controls[password1].dirty">
-      <span class="block" [ngClass]="{'text-primary': form.controls['password1'].value?.match('^(?=.*[A-Z])')}">letter.</span>
-        <span class="block" [ngClass]="{'text-primary': form.controls['password1'].value?.match('(?=.*[a-z])')}">At least one lowercaseletter.</span>
-        <span class="block" [ngClass]="{'text-primary': form.controls['password1'].value?.match('(.*[0-9].*)')}">At least onedigit.</span>
-        <span class="block" [ngClass]="{'text-primary': form.controls['password1'].value?.match('(?=.*[!@#$%^&*])')}">At least onespecialcharacter.</span>
-        <span class="block" [ngClass]="{'text-primary': form.controls['password1'].value?.match('.{8,}')}">At least 8 characterslong.</span>
-     </div><br><br>
-  
-     <!-- <p>CONFIRM PASSWORD</p>
-     <input formControlName="confirmPassword" type="password" placeholder="Confirm Password">
-     <div class="text-red-400 text-sm" *ngIf="form.controls[password2].dirty form.hasError('conconfirmPassword')" >
-        
-     </div> -->
-    <p>AGE: </p>
-    <input formControlName="age" type="number" placeholder="Age">
-    <div class="text-red-400 text-sm" *ngIf="form.controls['age'].invalid && form.controls['age'].touched">
-      ❌ You must be over 18 years old.
-    </div>
-  
-  
-    <p>TERMS: </p>
-    <label>
-      <input formControlName="aceptTerms" type="checkbox"> Acepto los términos
+<form [formGroup]="form" (ngSubmit)="sendform()" class="max-w-lg mx-auto p-6 bg-white shadow-lg rounded-lg">
+  <h1>REGISTER USER</h1>
+  <!-- NAME -->
+  <label class="block mb-2 text-gray-700 font-semibold">NAME:</label>
+  <input formControlName="name" placeholder="Name" 
+    class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+  <div class="text-red-500 text-sm mt-1" *ngIf="form.controls['name'].invalid && form.controls['name'].touched">
+    ❌ Name is required and must be at least 3 characters.
+  </div><br><br>
+
+  <!-- EMAIL -->
+  <label class="block mt-4 mb-2 text-gray-700 font-semibold">EMAIL:</label>
+  <input formControlName="email" type="email" placeholder="Email" 
+    class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+  <div class="text-red-500 text-sm mt-1" *ngIf="form.controls['email'].invalid && form.controls['email'].touched">
+    ❌ It must be a valid email.
+  </div><br><br>
+
+  <!-- PASSWORD -->
+  <label class="block mt-4 mb-2 text-gray-700 font-semibold">PASSWORD:</label>
+  <input formControlName="password1" type="password" placeholder="Password" 
+      class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+  <!-- Validación de requisitos después de tocar el campo -->
+  <div class="text-red-500 text-sm mt-1" *ngIf="form.controls['password1'].touched && form.controls['password1'].invalid">
+  <span class="block" [ngClass]="{'text-green-500': form.controls['password1'].value?.match('^(?=.*[A-Z])'), 'text-red-500': !form.controls['password1'].value?.match('^(?=.*[A-Z])')}">
+      {{ form.controls['password1'].value?.match('^(?=.*[A-Z])') ? '✔' : '❌' }} At least one uppercase letter.
+  </span>
+  <span class="block" [ngClass]="{'text-green-500': form.controls['password1'].value?.match('(?=.*[a-z])'), 'text-red-500': !form.controls['password1'].value?.match('(?=.*[a-z])')}">
+      {{ form.controls['password1'].value?.match('(?=.*[a-z])') ? '✔' : '❌' }} At least one lowercase letter.
+  </span>
+  <span class="block" [ngClass]="{'text-green-500': form.controls['password1'].value?.match('(.*[0-9].*)'), 'text-red-500': !form.controls['password1'].value?.match('(.*[0-9].*)')}">
+      {{ form.controls['password1'].value?.match('(.*[0-9].*)') ? '✔' : '❌' }} At least one digit.
+  </span>
+  <span class="block" [ngClass]="{'text-green-500': form.controls['password1'].value?.match('(?=.*[!@#$%^&*])'), 'text-red-500': !form.controls['password1'].value?.match('(?=.*[!@#$%^&*])')}">
+      {{ form.controls['password1'].value?.match('(?=.*[!@#$%^&*])') ? '✔' : '❌' }} At least one special character.
+  </span>
+  <span class="block" [ngClass]="{'text-green-500': form.controls['password1'].value?.match('.{8,}'), 'text-red-500': !form.controls['password1'].value?.match('.{8,}')}">
+      {{ form.controls['password1'].value?.match('.{8,}') ? '✔' : '❌' }} At least 8 characters long.
+  </span>
+  </div>
+  <br><br>
+
+  <!-- CONFIRM PASSWORD -->
+  <label class="block mt-4 mb-2 text-gray-700 font-semibold">CONFIRM PASSWORD:</label>
+  <input formControlName="password2" type="password" placeholder="Confirm Password" 
+      class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+  <!-- Mensaje de error cuando las contraseñas no coinciden -->
+  <div class="text-red-500 text-sm mt-1" *ngIf="form.hasError('passwordsMismatch') && form.touched">
+  ❌ Passwords do not match.
+  </div>
+  <br><br>
+
+  <!-- AGE -->
+  <label class="block mt-4 mb-2 text-gray-700 font-semibold">AGE:</label>
+  <input formControlName="age" type="number" placeholder="Age" 
+    class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+  <div class="text-red-500 text-sm mt-1" *ngIf="form.controls['age'].invalid && form.controls['age'].touched">
+    ❌ You must be over 18 years old.
+  </div><br><br>
+
+  <!-- TERMS -->
+  <label class="block mt-4 text-gray-700 font-semibold">
+    <input formControlName="aceptTerms" type="checkbox" class="mr-2">
+    I accept the terms and conditions
+  </label>
+  <div class="text-red-500 text-sm mt-1" *ngIf="form.controls['aceptTerms'].invalid && form.controls['aceptTerms'].touched">
+    ❌ You must accept the terms to continue.
+  </div><br><br>
+
+  <!-- GENDER -->
+  <label class="block mt-4 mb-2 text-gray-700 font-semibold">GENDER:</label>
+  <div class="flex gap-4">
+    <label class="flex items-center">
+      <input type="radio" formControlName="gender" value="male" class="mr-2"> Male
     </label>
-    <div class="text-red-400 text-sm" *ngIf="form.controls['aceptTerms'].invalid && form.controls['aceptTerms'].touched">
-      ❌ The registration terms are mandatory, you must accept them to continue.
-    </div>
-  
-  
-    <p>GENDER: </p>
-    <div>
-      <label><input type="radio" formControlName="gender" value="male"> Male</label>
-      <label><input type="radio" formControlName="gender" value="famale"> Famale</label>
-      <label><input type="radio" formControlName="none" value="none">I prefer not to answer</label>
-    </div>
-    <div class="text-red-400 text-sm" *ngIf="form.controls['gender'].invalid && form.controls['gender'].touched">
-        ❌You must select an option to continue
-    </div>
-   
-  
+    <label class="flex items-center">
+      <input type="radio" formControlName="gender" value="female" class="mr-2"> Female
+    </label>
+    <label class="flex items-center">
+      <input type="radio" formControlName="gender" value="none" class="mr-2"> Prefer not to answer
+    </label>
+  </div>
+  <div class="text-red-500 text-sm mt-1" *ngIf="form.controls['gender'].invalid && form.controls['gender'].touched">
+    ❌ You must select an option to continue.
+  </div><br><br>
+
+  <!-- SUBMIT BUTTON -->
+  <button type="submit" 
+    class="w-full mt-6 p-3 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition"
+    [disabled]="form.invalid">
+    Submit
+  </button>
+</form>
