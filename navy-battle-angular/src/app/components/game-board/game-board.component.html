@@ -1,0 +1,80 @@
+<div class="game-container">
+    <div class="game-info">
+      <h2>Batalla Naval</h2>
+      
+      <div *ngIf="isLoading" class="loading">
+        <p>Cargando el juego...</p>
+      </div>
+      
+      <div *ngIf="error" class="error-message">
+        <p>{{ error }}</p>
+        <button (click)="error = null">Cerrar</button>
+      </div>
+      
+      <div *ngIf="message" class="message">
+        <p>{{ message }}</p>
+      </div>
+      
+      <div *ngIf="gameState && !isLoading" class="game-stats">
+        <h3>Estadísticas del juego</h3>
+        <ul>
+          <li><strong>Estado:</strong> {{ gameState.status }}</li>
+          <li><strong>Disparos totales:</strong> {{ gameState.total_shots }}</li>
+          <li><strong>Disparos exitosos:</strong> {{ gameState.successful_shots }}</li>
+          <li><strong>Precisión:</strong> {{ gameState.accuracy }}%</li>
+          <li><strong>Tiempo transcurrido:</strong> {{ gameState.time_elapsed }}s</li>
+        </ul>
+        
+        <div class="ships-status">
+          <h4>Estado de los barcos</h4>
+          <p *ngIf="gameState.ships">
+            <strong>Barcos destruidos:</strong> {{ gameState.ships.destroyed }}/{{ gameState.ships.total }}
+          </p>
+        </div>
+      </div>
+      
+      <div class="actions">
+        <button (click)="restartGame()" [disabled]="isLoading">Nuevo juego</button>
+        <button (click)="finishGame()" [disabled]="isLoading || isGameOver">Abandonar juego</button>
+      </div>
+    </div>
+    
+    <div class="board-container" *ngIf="board.length > 0 && !isLoading">
+      <div class="board-labels horizontal">
+        <div class="label" *ngFor="let col of board[0]; let i = index">{{ i }}</div>
+      </div>
+      
+      <div class="board-with-labels">
+        <div class="board-labels vertical">
+          <div class="label" *ngFor="let row of board; let i = index">{{ i }}</div>
+        </div>
+        
+        <div class="board">
+          <div class="row" *ngFor="let row of board; let y = index">
+            <div 
+              class="cell" 
+              *ngFor="let cell of row; let x = index" 
+              [ngClass]="getCellClass(cell)"
+              (click)="handleCellClick(x, y)"
+              [class.selected]="selectedCell && selectedCell.x === x && selectedCell.y === y"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="legend" *ngIf="!isLoading">
+      <div class="legend-item">
+        <div class="legend-cell unknown"></div>
+        <span>Desconocido</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-cell hit"></div>
+        <span>Impacto</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-cell miss"></div>
+        <span>Agua</span>
+      </div>
+    </div>
+  </div>
