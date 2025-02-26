@@ -4,10 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserStatController;
 use App\Http\Controllers\GameController;
-use App\Http\Controllers\BoardController;
-use App\Http\Controllers\ShipController;
 use App\Http\Controllers\RankingController;
 use App\Http\Controllers\GamePlayController;
+use App\Http\Controllers\GameHistoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,7 +24,7 @@ Route::post('auth/register', [UserController::class, 'register']);
 Route::post('auth/login', [UserController::class, 'login']);
 
 // Protected routes
-Route::middleware('auth:sanctum')->group(function () {
+
     // Auth
     Route::post('auth/logout', [UserController::class, 'logout']);
     Route::get('auth/me', [UserController::class, 'me']);
@@ -41,6 +40,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('games/{id}', [GameController::class, 'show']);
     Route::get('games/status/active', [GameController::class, 'active']);
     
+    // Game History & Resume Functionality
+    Route::get('games/history', [GameHistoryController::class, 'index']); // Lista todas las partidas del usuario actual
+    Route::get('games/history/active', [GameHistoryController::class, 'active']); // Lista solo partidas activas
+    Route::get('games/history/completed', [GameHistoryController::class, 'completed']); // Lista partidas completadas
+    Route::get('games/{gameId}/resume', [GameHistoryController::class, 'resumeGame']);
+
     // Single Player Game Management
     Route::post('games/start', [GamePlayController::class, 'startNewGameWithAutoShips']); // New endpoint that auto-places ships
     Route::post('games/{gameId}/finish', [GameController::class, 'finishGame']);
@@ -54,4 +59,3 @@ Route::middleware('auth:sanctum')->group(function () {
     // Rankings
     Route::get('rankings', [RankingController::class, 'index']);
     Route::get('users/{userId}/ranking', [RankingController::class, 'show']);
-});
