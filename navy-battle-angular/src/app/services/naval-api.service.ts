@@ -87,10 +87,7 @@ export class NavalApiService {
     return this.http.get(`${this.apiUrl}/games/history/completed`, this.getAuthHeaders(this.token));
   }
 
-  resumeGame(gameId: number, ): Observable<any> {
-    
-    return this.http.get(`${this.apiUrl}/games/${gameId}/resume`, this.getAuthHeaders(this.token));
-  }
+  
 
   finishGame(gameId: number): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/games/${gameId}/abandon`, {});
@@ -100,6 +97,11 @@ export class NavalApiService {
     getAllGames(): Observable<any> {
       return this.http.get<any>(`${this.apiUrl}/games/history/all`);
     }
+
+     // Método para reanudar un juego existente (obtiene todos los datos necesarios)
+  resumeGame(gameId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/games/${gameId}/resume`);
+  }
   
     
 }

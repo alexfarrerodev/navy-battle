@@ -39,12 +39,96 @@ export class GameBoardComponent implements OnInit {
     this.route.params.subscribe(params => {
       if (params['id']) {
         this.gameId = +params['id'];
-        this.loadGame();
+        
+        // Comprobar si hay un estado de juego reanudado en sessionStorage
+        const resumedGameState = sessionStorage.getItem('resumedGameState');
+        
+        if (resumedGameState) {
+          // Si hay un estado guardado, lo cargamos directamente
+          this.loadResumedGameState(JSON.parse(resumedGameState));
+          // Limpiamos el estado guardado para evitar conflictos en futuras cargas
+          sessionStorage.removeItem('resumedGameState');
+        } else {
+          // Si no hay estado guardado, cargamos el juego normalmente
+          this.loadGame();
+        }
       } else {
         // Si no hay ID, intentar crear un nuevo juego
         this.createNewGame();
       }
     });
+  }
+
+  // Cargar estado desde un juego reanudado
+  loadResumedGameState(resumedState: any): void {
+    try {
+      console.log('Cargando estado reanudado:', resumedState);
+      
+      // Actualizar el estado del juego
+      this.gameState = resumedState.game;
+      
+      // Comprobar si el juego está terminado
+      this.isGameOver = this.gameState.status === 'completed' || 
+                        this.gameState.status === 'abandoned' || 
+                        this.gameState.status === 'finished';
+      
+      // Actualizar el tablero con los datos reanudados
+      if (resumedState.board) {
+        this.updateBoardFromResumedState(resumedState.board);
+      }
+      
+      // Mostrar mensaje de reanudación
+      this.message = resumedState.message || 'Juego reanudado correctamente';
+      
+      this.isLoading = false;
+      
+    } catch (error) {
+      console.error('Error al cargar el estado reanudado:', error);
+      // Si hay un error con el estado reanudado, intentamos cargar el juego normalmente
+      this.loadGame();
+    }
+  }
+  
+  // Método específico para actualizar el tablero desde el estado reanudado
+  updateBoardFromResumedState(boardData: any[][]): void {
+    // Verificamos que los datos sean válidos
+    if (!boardData || !Array.isArray(boardData) || boardData.length === 0) {
+      console.error('Datos de tablero inválidos:', boardData);
+      return;
+    }
+
+    console.log('Actualizando tablero desde estado reanudado');
+    
+    for (let y = 0; y < 10; y++) {
+      for (let x = 0; x < 10; x++) {
+        // IMPORTANTE: Usar clave consistente
+        const cellKey = `${x},${y}`;
+        const cellState = this.boardState.get(cellKey);
+        
+        // Verificamos que la celda existe en ambos lados
+        if (cellState && boardData[y] && boardData[y][x]) {
+          // Obtener el estado de la celda desde el estado reanudado
+          const serverCell = boardData[y][x];
+          
+          // Limpiamos propiedades adicionales primero
+          delete cellState.ship_type;
+          delete cellState.part_of_ship;
+          
+          // Copiamos propiedades básicas
+          cellState.state = serverCell.state;
+          cellState.hit = serverCell.hit;
+          
+          // Copiamos propiedades adicionales si existen
+          if (serverCell.ship_type) {
+            cellState.ship_type = serverCell.ship_type;
+          }
+          
+          if (serverCell.part_of_ship) {
+            cellState.part_of_ship = serverCell.part_of_ship;
+          }
+        }
+      }
+    }
   }
 
   // Inicializar tablero vacío con estructura consistente
@@ -199,7 +283,7 @@ export class GameBoardComponent implements OnInit {
         this.updateGameStats(response);
       },
       error: (error) => {
-        this.handleError('Error al realizar el disparo', error.message());
+        this.handleError('Error al realizar el disparo', error.message || error);
       }
     });
   }
@@ -252,23 +336,21 @@ export class GameBoardComponent implements OnInit {
 
   finishGame(): void {
     if (!this.gameId) return;
-  
+
     this.navalApiService.finishGame(this.gameId).subscribe({
       next: (response) => {
         this.message = response.message;
+        // No cambiar isGameOver a true para que pueda reanudarse después
         
-        // No cambiar isGameOver a true para permitir reanudar el juego
-        // Esto permite que el juego aparezca en la lista de juegos activos
-        
-        // Redirigir a la página de historial de juegos o a donde sea apropiado
-        // Para permitir que el usuario acceda al juego más tarde
+        // Redirigir a la página de juegos
         this.router.navigate(['/games']);
       },
       error: (error) => {
-        this.handleError('Error al abandonar el juego', error);
+        this.handleError('Error al finalizar el juego', error);
       }
     });
   }
+
   handleError(message: string, error: any): void {
     this.isLoading = false;
     this.error = `${message}: ${error.message || 'Error desconocido'}`;
