@@ -199,7 +199,7 @@ export class GameBoardComponent implements OnInit {
         this.updateGameStats(response);
       },
       error: (error) => {
-        this.handleError('Error al realizar el disparo', error);
+        this.handleError('Error al realizar el disparo', error.message());
       }
     });
   }
@@ -252,20 +252,23 @@ export class GameBoardComponent implements OnInit {
 
   finishGame(): void {
     if (!this.gameId) return;
-
+  
     this.navalApiService.finishGame(this.gameId).subscribe({
       next: (response) => {
         this.message = response.message;
-        this.isGameOver = true;
-        // Actualizar el estado del juego
-        this.loadGame();
+        
+        // No cambiar isGameOver a true para permitir reanudar el juego
+        // Esto permite que el juego aparezca en la lista de juegos activos
+        
+        // Redirigir a la página de historial de juegos o a donde sea apropiado
+        // Para permitir que el usuario acceda al juego más tarde
+        this.router.navigate(['/games']);
       },
       error: (error) => {
-        this.handleError('Error al finalizar el juego', error);
+        this.handleError('Error al abandonar el juego', error);
       }
     });
   }
-
   handleError(message: string, error: any): void {
     this.isLoading = false;
     this.error = `${message}: ${error.message || 'Error desconocido'}`;

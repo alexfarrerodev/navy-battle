@@ -87,8 +87,14 @@ export class NavalApiService {
     return this.http.get(`${this.apiUrl}/games/${gameId}/resume`, this.getAuthHeaders(this.token));
   }
 
-  finishGame(gameId: number, ): Observable<any> {
-    
-    return this.http.post(`${this.apiUrl}/games/${gameId}/finish`, {}, this.getAuthHeaders(this.token));
+  finishGame(gameId: number): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/games/${gameId}/abandon`, {});
   }
+
+    // Método para obtener TODOS los juegos del usuario (activos y completados)
+    getAllGames(): Observable<any> {
+      return this.http.get<any>(`${this.apiUrl}/games/history/all`);
+    }
+  
+    
 }

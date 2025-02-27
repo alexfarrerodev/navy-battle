@@ -14,7 +14,7 @@ class GameHistoryController extends Controller
      */
     public function index()
     {
-        $games = Game::where('user_id', Auth::id())
+        $games = Game::where('user_id', 14)
             ->orderBy('created_at', 'desc')
             ->get();
             

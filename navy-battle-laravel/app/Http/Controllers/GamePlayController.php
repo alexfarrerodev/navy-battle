@@ -545,4 +545,35 @@ public function getRevealedBoard($gameId)
         
         return $board;
     }
+   /**
+ * Abandon a game but keep it active for resuming later
+ */
+public function abandonGame($gameId)
+{
+    $game = Game::findOrFail($gameId);
+    
+    // Verify that the game belongs to the authenticated user
+    if ($game->user_id != 14) {
+        return response()->json(['error' => 'Not authorized to modify this game'], 403);
+    }
+    
+    // Solo modificamos si el juego está activo
+    if ($game->status == 'active') {
+        // Mantenemos el estado como "active" para que pueda reanudarse
+        $game->status = 'active';
+        $game->save();
+        
+        return response()->json([
+            'message' => 'Juego abandonado temporalmente. Puedes reanudarlo más tarde.',
+            'game_id' => $gameId,
+            'status' => $game->status
+        ]);
+    }
+    
+    return response()->json([
+        'message' => 'El juego ya no está activo.',
+        'game_id' => $gameId,
+        'status' => $game->status
+    ]);
+}
 }
