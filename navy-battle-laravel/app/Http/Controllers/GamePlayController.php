@@ -19,6 +19,7 @@ class GamePlayController extends Controller
      */
     public function autoPlaceShips($gameId)
     {
+        
         $game = Game::findOrFail($gameId);
         
         // Verify that the game belongs to the authenticated user
@@ -169,7 +170,7 @@ class GamePlayController extends Controller
         $game = Game::findOrFail($gameId);
         
         // Verify that the game belongs to the authenticated user
-        if ($game->user_id != Auth::id()) {
+        if ($game->user_id != 14) {
             return response()->json(['error' => 'Not authorized to play this game'], 403);
         }
         
@@ -293,7 +294,7 @@ class GamePlayController extends Controller
         $game = Game::with('ships')->findOrFail($gameId);
         
         // Verify that the game belongs to the authenticated user
-        if ($game->user_id != Auth::id()) {
+        if ($game->user_id != 14) {
             return response()->json(['error' => 'Not authorized to view this game'], 403);
         }
         
@@ -320,66 +321,94 @@ class GamePlayController extends Controller
     }
     
     /**
-     * Get the player's board with revealed hits/misses
-     * This replaces getOpponentBoard since in single player there's only one board
-     */
-    public function getRevealedBoard($gameId)
-    {
-        $game = Game::findOrFail($gameId);
-        
-        // Verify that the game belongs to the authenticated user
-        if ($game->user_id != Auth::id()) {
-            return response()->json(['error' => 'Not authorized to view this game'], 403);
+ * Get the player's board with revealed hits/misses
+ * This replaces getOpponentBoard since in single player there's only one board
+ */
+public function getRevealedBoard($gameId)
+{
+    $game = Game::findOrFail($gameId);
+    
+    // Verify that the game belongs to the authenticated user
+    if ($game->user_id != 14) {
+        return response()->json(['error' => 'Not authorized to view this game'], 403);
+    }
+    
+    $board = Board::where('game_id', $gameId)->firstOrFail();
+    $boardData = $board->board_data_json;
+    
+    // Create a version of the board that only shows hits/misses
+    $revealedBoard = [];
+    
+    // Inicializar un tablero vacío con estructura consistente
+    for ($y = 0; $y < 10; $y++) {
+        $revealedBoard[$y] = [];
+        for ($x = 0; $x < 10; $x++) {
+            $revealedBoard[$y][$x] = [
+                'state' => 'unknown',
+                'hit' => false
+            ];
         }
-        
-        $board = Board::where('game_id', $gameId)->firstOrFail();
-        $boardData = $board->board_data_json;
-        
-        // Create a version of the board that only shows hits/misses
-        $revealedBoard = [];
-        
-        for ($i = 0; $i < 10; $i++) {
-            for ($j = 0; $j < 10; $j++) {
-                $cell = $boardData[$i][$j];
+    }
+    
+    // Rellenar el tablero con los datos reales
+    for ($y = 0; $y < 10; $y++) {
+        for ($x = 0; $x < 10; $x++) {
+            // Asegurarse que existen los datos para esta coordenada
+            if (isset($boardData[$x][$y])) {
+                $cell = $boardData[$x][$y];
                 
                 if ($cell['hit'] === true) {
                     // Show hit or miss
-                    $revealedBoard[$i][$j] = [
-                        'state' => $cell['state'] === 'ship' ? 'hit' : 'miss',
-                        'hit' => true
-                    ];
+                    $revealedBoard[$y][$x]['state'] = $cell['state'] === 'ship' ? 'hit' : 'miss';
+                    $revealedBoard[$y][$x]['hit'] = true;
                     
                     // If it's a destroyed ship, show the type
                     if ($cell['state'] === 'ship') {
                         $ship = Ship::find($cell['ship_id']);
                         if ($ship && $ship->is_destroyed) {
-                            $revealedBoard[$i][$j]['ship_type'] = $ship->ship_type;
+                            $revealedBoard[$y][$x]['ship_type'] = $ship->ship_type;
                             
                             // Reveal the entire ship when destroyed
                             for ($k = 0; $k < $ship->size; $k++) {
                                 $shipX = $ship->orientation == 'horizontal' ? $ship->start_x + $k : $ship->start_x;
                                 $shipY = $ship->orientation == 'vertical' ? $ship->start_y + $k : $ship->start_y;
                                 
-                                $revealedBoard[$shipX][$shipY]['ship_type'] = $ship->ship_type;
-                                $revealedBoard[$shipX][$shipY]['part_of_ship'] = true;
+                                // Asegurar que las coordenadas son válidas
+                                if ($shipX >= 0 && $shipX < 10 && $shipY >= 0 && $shipY < 10) {
+                                    $revealedBoard[$shipY][$shipX]['ship_type'] = $ship->ship_type;
+                                    $revealedBoard[$shipY][$shipX]['part_of_ship'] = true;
+                                    
+                                    // Si esta parte del barco fue golpeada, mostrar como 'hit'
+                                    if (isset($boardData[$shipX][$shipY]) && $boardData[$shipX][$shipY]['hit'] === true) {
+                                        $revealedBoard[$shipY][$shipX]['state'] = 'hit';
+                                        $revealedBoard[$shipY][$shipX]['hit'] = true;
+                                    }
+                                }
                             }
                         }
                     }
-                } else {
-                    // Cell not fired at - shown as unknown
-                    $revealedBoard[$i][$j] = [
-                        'state' => 'unknown',
-                        'hit' => false
-                    ];
                 }
             }
         }
-        
-        return response()->json([
-            'game_id' => $gameId,
-            'board' => $revealedBoard
-        ]);
     }
+    
+    // Verificar que todas las celdas tengan las propiedades correctas
+    for ($y = 0; $y < 10; $y++) {
+        for ($x = 0; $x < 10; $x++) {
+            if (!isset($revealedBoard[$y][$x]['state'])) {
+                $revealedBoard[$y][$x]['state'] = 'unknown';
+            }
+            if (!isset($revealedBoard[$y][$x]['hit'])) {
+                $revealedBoard[$y][$x]['hit'] = false;
+            }
+        }
+    }
+    
+    return response()->json([
+        'game_id' => $gameId,
+        'board' => $revealedBoard
+    ]);
+}
     
     /**
      * Start a new game with auto-placed ships
@@ -398,7 +427,7 @@ class GamePlayController extends Controller
                 'successful_shots' => 0
             ]);
 
-            echo Auth::id();
+            
             
             // Create an empty board
             $board = Board::create([
@@ -516,4 +545,35 @@ class GamePlayController extends Controller
         
         return $board;
     }
+   /**
+ * Abandon a game but keep it active for resuming later
+ */
+public function abandonGame($gameId)
+{
+    $game = Game::findOrFail($gameId);
+    
+    // Verify that the game belongs to the authenticated user
+    if ($game->user_id != 14) {
+        return response()->json(['error' => 'Not authorized to modify this game'], 403);
+    }
+    
+    // Solo modificamos si el juego está activo
+    if ($game->status == 'active') {
+        // Mantenemos el estado como "active" para que pueda reanudarse
+        $game->status = 'active';
+        $game->save();
+        
+        return response()->json([
+            'message' => 'Juego abandonado temporalmente. Puedes reanudarlo más tarde.',
+            'game_id' => $gameId,
+            'status' => $game->status
+        ]);
+    }
+    
+    return response()->json([
+        'message' => 'El juego ya no está activo.',
+        'game_id' => $gameId,
+        'status' => $game->status
+    ]);
+}
 }

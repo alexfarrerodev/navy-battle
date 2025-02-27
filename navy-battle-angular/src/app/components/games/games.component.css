@@ -1,0 +1,222 @@
+.games-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.games-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.games-header h1 {
+  color: #2c3e50;
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+.games-header p {
+  color: #7f8c8d;
+  font-size: 1.2rem;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.loading-spinner {
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #3498db;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-message {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 15px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-close {
+  background-color: transparent;
+  border: none;
+  color: #721c24;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.new-game-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.btn-new-game {
+  background-color: #27ae60;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 12px 25px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.3s;
+}
+
+.btn-new-game:hover {
+  background-color: #2ecc71;
+}
+
+.btn-new-game:disabled {
+  background-color: #95a5a6;
+  cursor: not-allowed;
+}
+
+.btn-new-game .icon {
+  margin-right: 10px;
+  font-size: 1.3rem;
+}
+
+.no-games-message {
+  text-align: center;
+  padding: 40px;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+}
+
+.games-list {
+  margin-bottom: 40px;
+}
+
+.games-list h2 {
+  margin-bottom: 20px;
+  color: #2c3e50;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 10px;
+}
+
+.finished-games h2 {
+  border-bottom-color: #95a5a6;
+}
+
+.game-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.game-card {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
+}
+
+.game-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.game-info {
+  padding: 20px;
+  flex-grow: 1;
+}
+
+.game-info h3 {
+  margin: 0 0 10px;
+  color: #2c3e50;
+}
+
+.game-date {
+  color: #7f8c8d;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+
+.game-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat-label {
+  color: #7f8c8d;
+}
+
+.stat-value {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.status-active {
+  color: #27ae60;
+}
+
+.status-finished {
+  color: #3498db;
+}
+
+.game-actions {
+  padding: 15px 20px;
+  background-color: #f8f9fa;
+  display: flex;
+  justify-content: center;
+}
+
+.btn-resume, .btn-view-details {
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s;
+  font-weight: bold;
+}
+
+.btn-resume {
+  background-color: #3498db;
+  color: white;
+}
+
+.btn-resume:hover {
+  background-color: #2980b9;
+}
+
+.btn-view-details {
+  background-color: #ecf0f1;
+  color: #2c3e50;
+  border: 1px solid #bdc3c7;
+}
+
+.btn-view-details:hover {
+  background-color: #bdc3c7;
+}

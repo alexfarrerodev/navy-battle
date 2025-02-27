@@ -7,17 +7,25 @@ import { Observable } from 'rxjs';
 })
 export class NavalApiService {
   private apiUrl = 'http://localhost:8000';
+  private token : string | null = null;
 
   constructor(private http: HttpClient) { }
 
-  private getAuthHeaders(token: string) {
+  private getAuthHeaders(token : string | null) {
+    this.token = sessionStorage.getItem('access_token')
     return {
       headers: new HttpHeaders({ 'Authorization': `Bearer ${token}` })
     };
   }
 
+  ngOnInit(){
+    this.token = sessionStorage.getItem('access_token')
+  }
+
+
   // Authentication endpoints
   register(username: string, email: string, password: string): Observable<any> {
+    
     return this.http.post(`${this.apiUrl}/auth/register`, { username, email, password });
   }
 
@@ -31,50 +39,67 @@ export class NavalApiService {
 
 
   // Game management endpoints
-  startGame(token: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/games/start`, {}, this.getAuthHeaders(token));
+  startGame(): Observable<any> {
+    
+    return this.http.post(`${this.apiUrl}/games/start`, {}, this.getAuthHeaders(this.token));
   }
 
-  getBoard(gameId: number, token: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/games/${gameId}/board`, this.getAuthHeaders(token));
+  getBoard(gameId: number): Observable<any> {
+    
+    return this.http.get(`${this.apiUrl}/games/${gameId}/board`, this.getAuthHeaders(this.token));
   }
 
-  fireShot(gameId: number, x: number, y: number, token: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/games/${gameId}/fire`, { x, y }, this.getAuthHeaders(token));
+  fireShot(gameId: number, x: number, y: number): Observable<any> {
+    
+    return this.http.post(`${this.apiUrl}/games/${gameId}/fire`, { x, y }, this.getAuthHeaders(this.token));
   }
 
-  getGameState(gameId: number, token: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/games/${gameId}/state`, this.getAuthHeaders(token));
+  getGameState(gameId: number): Observable<any> {
+    
+    return this.http.get(`${this.apiUrl}/games/${gameId}/state`, this.getAuthHeaders(this.token));
   }
 
   // User statistics endpoints
-  getUserStats(userId: number, token: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/users/${userId}/stats`, this.getAuthHeaders(token));
+  getUserStats(userId: number): Observable<any> {
+    
+    return this.http.get(`${this.apiUrl}/users/${userId}/stats`, this.getAuthHeaders(this.token));
   }
 
   // Ranking endpoints
-  getRankings(token: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/rankings`, this.getAuthHeaders(token));
+  getRankings(): Observable<any> {
+    
+    return this.http.get(`${this.apiUrl}/rankings`, this.getAuthHeaders(this.token));
   }
 
   // Game history endpoints
-  getGameHistory(token: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/games/history`, this.getAuthHeaders(token));
+  getGameHistory(): Observable<any> {
+    
+    return this.http.get(`${this.apiUrl}/games/history`, this.getAuthHeaders(this.token));
   }
 
-  getActiveGames(token: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/games/history/active`, this.getAuthHeaders(token));
+  getActiveGames(): Observable<any> {
+    
+    return this.http.get(`${this.apiUrl}/games/history/active`, this.getAuthHeaders(this.token));
   }
 
-  getCompletedGames(token: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/games/history/completed`, this.getAuthHeaders(token));
+  getCompletedGames(): Observable<any> {
+    
+    return this.http.get(`${this.apiUrl}/games/history/completed`, this.getAuthHeaders(this.token));
   }
 
-  resumeGame(gameId: number, token: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/games/${gameId}/resume`, this.getAuthHeaders(token));
+  resumeGame(gameId: number, ): Observable<any> {
+    
+    return this.http.get(`${this.apiUrl}/games/${gameId}/resume`, this.getAuthHeaders(this.token));
   }
 
-  finishGame(gameId: number, token: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/games/${gameId}/finish`, {}, this.getAuthHeaders(token));
+  finishGame(gameId: number): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/games/${gameId}/abandon`, {});
   }
+
+    // Método para obtener TODOS los juegos del usuario (activos y completados)
+    getAllGames(): Observable<any> {
+      return this.http.get<any>(`${this.apiUrl}/games/history/all`);
+    }
+  
+    
 }

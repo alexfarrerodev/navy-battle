@@ -49,12 +49,11 @@ Route::get('games/{gameId}/resume', [GameHistoryController::class, 'resumeGame']
 
 // Single Player Game Management
 Route::post('games/start', [GamePlayController::class, 'startNewGameWithAutoShips']); // New endpoint that auto-places ships
-Route::post('games/{gameId}/finish', [GameController::class, 'destroy']);
+Route::post('games/{gameId}/finish', [GameController::class, 'finishGame']);
 
 // Game Interaction - Single Player
 Route::post('games/{gameId}/auto-place-ships', [GamePlayController::class, 'autoPlaceShips']); // Manual triggering
 Route::post('games/{gameId}/fire', [GamePlayController::class, 'fireShot']);
-Route::post('games/{gameId}/abandon', [GamePlayController::class, 'abandonGame']);
 Route::get('games/{gameId}/state', [GamePlayController::class, 'getGameState']);
 Route::get('games/{gameId}/board', [GamePlayController::class, 'getRevealedBoard']); // Renamed from getOpponentBoard
 
