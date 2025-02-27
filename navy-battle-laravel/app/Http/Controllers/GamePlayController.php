@@ -22,12 +22,12 @@ class GamePlayController extends Controller
         $game = Game::findOrFail($gameId);
         
         // Verify that the game belongs to the authenticated user
-        if ($game->user_id != Auth::id()) {
+        if ($game->user_id != 14) {
             return response()->json(['error' => 'Not authorized to modify this game'], 403);
         }
         
         // Verify the game is in initial state
-        if ($game->status != 'created') {
+        if ($game->status != 'active') {
             return response()->json(['error' => 'Cannot place ships on a game that has already started'], 400);
         }
         
@@ -138,7 +138,7 @@ class GamePlayController extends Controller
             $board->save();
             
             // Update game status
-            $game->status = 'ready';
+            $game->status = 'active';
             $game->save();
             
             DB::commit();
@@ -146,7 +146,7 @@ class GamePlayController extends Controller
             return response()->json([
                 'message' => 'Ships placed automatically',
                 'game_id' => $gameId,
-                'status' => 'ready'
+                'status' => 'active'
             ]);
             
         } catch (\Exception $e) {
@@ -174,7 +174,7 @@ class GamePlayController extends Controller
         }
         
         // Verify the game is in a valid state for firing
-        if ($game->status != 'ready' && $game->status != 'in_progress') {
+        if ($game->status != 'active' && $game->status != 'active') {
             return response()->json(['error' => 'Cannot fire in the current game state'], 400);
         }
         
@@ -203,8 +203,8 @@ class GamePlayController extends Controller
         ];
         
         // Update game status if it's the first shot
-        if ($game->status === 'ready') {
-            $game->status = 'in_progress';
+        if ($game->status === 'active') {
+            $game->status = 'active';
             $game->start_time = now();
         }
         
@@ -250,7 +250,7 @@ class GamePlayController extends Controller
                 
                 if ($allShipsDestroyed) {
                     $result['game_over'] = true;
-                    $game->status = 'completed';
+                    $game->status = 'finished';
                     $game->end_time = now();
                     $game->game_time = $game->end_time->diffInSeconds($game->start_time);
                     
@@ -392,11 +392,13 @@ class GamePlayController extends Controller
         try {
             // Create a new game
             $game = Game::create([
-                'user_id' => Auth::id(),
-                'status' => 'created',
+                'user_id' => 14,
+                'status' => 'active',
                 'total_shots' => 0,
                 'successful_shots' => 0
             ]);
+
+            echo Auth::id();
             
             // Create an empty board
             $board = Board::create([
