@@ -23,7 +23,7 @@ export class GameBoardComponent implements OnInit {
   selectedCell: { x: number, y: number } | null = null;
   
   // Token fijo para pruebas (en una aplicación real, esto vendría de un servicio de autenticación)
-  token: string = 'test_token';
+  token: string = 'fIW9MAeCCbomZdW9L7cwaHt3eO08rqIOIuJv6I6M33411b8d';
 
   constructor(
     private route: ActivatedRoute,
@@ -79,8 +79,7 @@ export class GameBoardComponent implements OnInit {
         this.gameId = response.game.game_id;
         this.message = response.message;
         
-        // Actualizar la URL con el ID del nuevo juego
-        this.router.navigate(['/game', this.gameId]);
+        
         
         // Cargar el tablero del nuevo juego
         this.loadGame();

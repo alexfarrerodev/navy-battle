@@ -36,7 +36,7 @@ export class RegisterFormComponent {
     console.log("Form Valid?", this.form.valid);
     
     if (this.form.valid) {
-      this.navalApiService.register(this.form.value.username, this.form.value.email, this.form.value.password).subscribe(
+      this.navalApiService.register(this.form.value.username, this.form.value.email, this.form.value.password1).subscribe(
         (response: any) => {
           console.log('User registered successfully:', response);
         },
