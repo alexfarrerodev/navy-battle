@@ -75,7 +75,23 @@ export class GamesComponent implements OnInit {
   }
 
   goToGame(gameId: number): void {
-    this.router.navigate(['/game-board', gameId]);
+    // En lugar de simplemente navegar, primero recuperamos el estado del juego mediante el endpoint de resume
+    this.isLoading = true;
+    
+    this.navalApiService.resumeGame(gameId).subscribe({
+      next: (response) => {
+        console.log('Juego recuperado:', response);
+        // Almacenamos el estado recuperado en el almacenamiento de sesión para que el componente del tablero pueda acceder a él
+        sessionStorage.setItem('resumedGameState', JSON.stringify(response));
+        
+        // Navegamos al componente del tablero con el ID del juego
+        this.router.navigate(['/game-board', gameId]);
+        this.isLoading = false;
+      },
+      error: (error) => {
+        this.handleError(`Error al reanudar el juego #${gameId}`, error);
+      }
+    });
   }
 
   startNewGame(): void {
