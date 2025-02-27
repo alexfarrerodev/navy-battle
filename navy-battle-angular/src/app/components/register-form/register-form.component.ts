@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms'
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { NavalApiService } from '../../services/naval-api.service';
 @Component({
   selector: 'app-register-form',
@@ -11,13 +11,15 @@ import { NavalApiService } from '../../services/naval-api.service';
 })
 export class RegisterFormComponent {
 
+  // Form Group
   form: FormGroup;
   passwordConfirmed : boolean = false;
   StrongPasswordRegx: RegExp = /^(?=[^A-Z]*[A-Z])(?=[^a-z]*[a-z])(?=\D*\d).{8,}$/;
   age!: number;
-  aceptTerms : boolean = false;
+  acceptTerms : boolean = false;
   
-  constructor(private navalApiService: NavalApiService) {
+  // Constructor
+  constructor(private navalApiService: NavalApiService, private router: Router) {
     this.form = new FormGroup({
       username: new FormControl('', [Validators.required, Validators.minLength(3)]),
       email: new FormControl('', [Validators.required, Validators.email]),
@@ -29,27 +31,39 @@ export class RegisterFormComponent {
   
 
   // METHODS
+
+  /**
+   * Performs the register of the user. (or tries it)
+   */
   sendForm() {
 
-    console.log("Form Status:", this.form.status);
-    console.log("Form Value:", this.form.value);
-    console.log("Form Valid?", this.form.valid);
+    // console.log("Form Status:", this.form.status);
+    // console.log("Form Value:", this.form.value);
+    // console.log("Form Valid?", this.form.valid);
     
     if (this.form.valid) {
-      this.navalApiService.register(this.form.value.username, this.form.value.email, this.form.value.password).subscribe(
+      this.navalApiService.register(this.form.value.username, this.form.value.email, this.form.value.password1).subscribe(
         (response: any) => {
           console.log('User registered successfully:', response);
+          sessionStorage.setItem('username', response.user.username);
+          sessionStorage.setItem('access_token', response.access_token);
+          this.router.navigate(['/home']).then(() => {
+            window.location.reload();
+          });
         },
         (error: any) => {
           console.error('Error registering user:', error);
         }
       );
     } else {
-      console.log('Invalid Form');
+      console.log('Invalid Form!');
+      this.form.markAllAsTouched();
     }
-
   }
 
+  /**
+   * Same password validation.
+   */
   passwordsMatchValidator: ValidatorFn = (form: AbstractControl): ValidationErrors | null => {
     const password1 = form.get('password1')?.value;
     const password2 = form.get('password2')?.value;
