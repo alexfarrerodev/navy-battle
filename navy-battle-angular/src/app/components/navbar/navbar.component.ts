@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { NavalApiService } from '../../services/naval-api.service';
 
 @Component({
   selector: 'app-navbar',
@@ -9,23 +10,32 @@ import { CommonModule } from '@angular/common';
   templateUrl: './navbar.component.html'
 })
 export class NavbarComponent implements OnInit {
+
+  // Attributes
   isLoggedIn: boolean = false;
   username: string | null = null;
 
+  // Constructor
+  constructor(private navalApiService: NavalApiService) { }
+
+  // METHODS
+
   ngOnInit() {
-    // Comprobar si el usuario está loggeado verificando el token en sessionStorage
+  
     this.checkLoginStatus();
     
-    // Escuchar cambios en el sessionStorage para actualizar el estado de login
     window.addEventListener('storage', () => {
       this.checkLoginStatus();
     });
+
   }
 
+  /**
+   * Checks if the user is logged in or not.
+   */
   private checkLoginStatus() {
     const token = sessionStorage.getItem('access_token');
     this.isLoggedIn = !!token;
-    
     if (this.isLoggedIn) {
       this.username = sessionStorage.getItem('username');
     } else {
@@ -33,18 +43,22 @@ export class NavbarComponent implements OnInit {
     }
   }
 
+  /**
+   * Performs the logout action in client and in server.
+   */
   logout() {
-    // Eliminar datos de sesión
-    sessionStorage.removeItem('user_id');
+
     sessionStorage.removeItem('username');
     sessionStorage.removeItem('access_token');
-    sessionStorage.removeItem('token_type');
     
-    // Actualizar estado
     this.isLoggedIn = false;
     this.username = null;
     
-    // Disparar evento de storage para que otros componentes se actualicen
     window.dispatchEvent(new Event('storage'));
+
+    this.navalApiService.logout().subscribe((response: any) => {
+        console.log('User logged out successfully:', response);
+    });
+
   }
 }

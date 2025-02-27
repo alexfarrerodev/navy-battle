@@ -25,6 +25,11 @@ export class NavalApiService {
     return this.http.post(`${this.apiUrl}/auth/login`, { email, password });
   }
 
+  logout(): Observable<any> {
+    return this.http.post(`${this.apiUrl}/auth/logout`, {});
+  }
+
+
   // Game management endpoints
   startGame(token: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/games/start`, {}, this.getAuthHeaders(token));

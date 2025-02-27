@@ -14,19 +14,18 @@
 
     <div id="navbar-menu" class="hidden md:flex md:w-auto w-full">
       <ul class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-8 p-4 md:p-0 bg-gray-800 md:bg-transparent rounded-lg">
-        <!-- Menú común para todos los usuarios -->
+    
         <li class="duration-300 hover:scale-110"><a routerLink="home" class="nav-link text-red-600 underline font-bold">Home</a></li>
         <li class="duration-300 hover:scale-110"><a routerLink="about" class="nav-link text-red-600 underline font-bold">About</a></li>
         <li class="duration-300 hover:scale-110"><a routerLink="games" class="nav-link text-red-600 underline font-bold">Games</a></li>
         
-        <!-- Menú para usuarios no loggeados -->
         @if (!isLoggedIn) {
           <li class="duration-300 hover:scale-110"><a routerLink="register" class="nav-link text-red-600 underline font-bold">Register</a></li>
           <li class="duration-300 hover:scale-110"><a routerLink="login" class="nav-link text-red-600 underline font-bold">Login</a></li>
         }
-        
-        <!-- Menú para usuarios loggeados -->
+      
         @if (isLoggedIn) {
+          <li class="duration-300 hover:scale-110"><a (click)="logout()" class="nav-link text-red-600 underline font-bold cursor-pointer">Logout</a></li>
           <li class="duration-300 hover:scale-110">
             <div class="flex items-center gap-2">
               <div class="w-8 h-8 rounded-full overflow-hidden bg-gray-700 flex items-center justify-center">
@@ -35,9 +34,8 @@
               <span class="text-white">{{ username }}</span>
             </div>
           </li>
-          <li class="duration-300 hover:scale-110"><a routerLink="profile" class="nav-link text-red-600 underline font-bold">Profile</a></li>
-          <li class="duration-300 hover:scale-110"><a (click)="logout()" class="nav-link text-red-600 underline font-bold cursor-pointer">Logout</a></li>
         }
+
       </ul>
     </div>
   </div>
