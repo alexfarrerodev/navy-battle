@@ -45,6 +45,7 @@ export class RegisterFormComponent {
       this.navalApiService.register(this.form.value.username, this.form.value.email, this.form.value.password1).subscribe(
         (response: any) => {
           console.log('User registered successfully:', response);
+          sessionStorage.setItem("userId", response.user.user_id);
           sessionStorage.setItem('username', response.user.username);
           sessionStorage.setItem('access_token', response.access_token);
           this.router.navigate(['/home']).then(() => {

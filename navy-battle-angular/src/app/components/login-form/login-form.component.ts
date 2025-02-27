@@ -2,11 +2,11 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NavalApiService } from '../../services/naval-api.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-login-form',
-  imports: [CommonModule,ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './login-form.component.html',
 })
 export class LoginFormComponent {
@@ -35,6 +35,7 @@ export class LoginFormComponent {
       this.navalApiService.login(this.form.value.email, this.form.value.password).subscribe(
         (response: any) => {
           console.log('User logged in successfully:', response);
+          sessionStorage.setItem("userId", response.user.user_id);
           sessionStorage.setItem('username', response.user.username);
           sessionStorage.setItem('access_token', response.access_token);
           this.router.navigate(['/home']).then(() => {
