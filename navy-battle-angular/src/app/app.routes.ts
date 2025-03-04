@@ -6,6 +6,8 @@ import { GamesComponent } from './components/games/games.component';
 import { RegisterFormComponent } from './components/register-form/register-form.component';
 import { LoginFormComponent } from './components/login-form/login-form.component';
 import { GameBoardComponent } from './components/game-board/game-board.component';
+import { ContactFormComponent } from './components/contact-form/contact-form.component';
+import { StatisticsComponent } from './components/statistics/statistics.component';
 
 export const routes: Routes = [
     {path: "", redirectTo: "home", pathMatch: "full"},
@@ -15,5 +17,7 @@ export const routes: Routes = [
     {path: "register", component: RegisterFormComponent},
     {path: "login", component: LoginFormComponent},
     {path: "game-board", component: GameBoardComponent},
+    {path: "statistics", component: StatisticsComponent},
+    {path: "contact-form",component: ContactFormComponent},
     {path: "**", component: Nf404Component}
 ];
