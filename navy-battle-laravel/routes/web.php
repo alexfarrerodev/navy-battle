@@ -15,8 +15,8 @@ use App\Http\Controllers\GameHistoryController;
 */
 
 
-// Fix for login route not defined error
-Route::get('login', function(){
+ // Fix for login route not defined error
+ Route::get('login', function () {
     return response()->json(['message' => 'Please login to continue'], 401);
 })->name('login');
 
@@ -24,40 +24,45 @@ Route::get('login', function(){
 Route::post('auth/register', [UserController::class, 'register']);
 Route::post('auth/login', [UserController::class, 'login']);
 
-// Protected routes
 
-// Auth
-Route::post('auth/logout', [UserController::class, 'logout']);
-Route::get('auth/me', [UserController::class, 'me']);
+Route::middleware('auth:sanctum')->group(function () {// Users
 
-// Users
-Route::apiResource('users', UserController::class);
+   
+    // Protected routes
 
-// User statistics
-Route::get('users/{userId}/stats', [UserStatController::class, 'show']);
+    // Auth
+    Route::post('auth/logout', [UserController::class, 'logout']);
+    Route::get('auth/me', [UserController::class, 'me']);
+    Route::apiResource('users', UserController::class);
 
-// Games
-Route::get('games', [GameController::class, 'index']);
-Route::get('games/{id}', [GameController::class, 'show']);
-Route::get('games/status/active', [GameController::class, 'active']);
+    // User statistics
+    Route::get('users/{userId}/stats', [UserStatController::class, 'show']);
 
-// Game History & Resume Functionality
-Route::get('games/history/all', [GameHistoryController::class, 'index']); // Lista todas las partidas del usuario actual
-Route::get('games/history/active', [GameHistoryController::class, 'active']); // Lista solo partidas activas
-Route::get('games/history/completed', [GameHistoryController::class, 'completed']); // Lista partidas completadas
-Route::get('games/{gameId}/resume', [GameHistoryController::class, 'resumeGame']);
+    // Games
+    Route::get('games', [GameController::class, 'index']);
+    Route::get('games/{id}', [GameController::class, 'show']);
+    Route::get('games/status/active', [GameController::class, 'active']);
 
-// Single Player Game Management
-Route::post('games/start', [GamePlayController::class, 'startNewGameWithAutoShips']); // New endpoint that auto-places ships
-Route::post('games/{gameId}/finish', [GameController::class, 'destroy']);
+    // Game History & Resume Functionality
+    Route::get('games/history/all', [GameHistoryController::class, 'index']); // Lista todas las partidas del usuario actual
+    Route::get('games/history/active', [GameHistoryController::class, 'active']); // Lista solo partidas activas
+    Route::get('games/history/completed', [GameHistoryController::class, 'completed']); // Lista partidas completadas
+    Route::get('games/{gameId}/resume', [GameHistoryController::class, 'resumeGame']);
 
-// Game Interaction - Single Player
-Route::post('games/{gameId}/auto-place-ships', [GamePlayController::class, 'autoPlaceShips']); // Manual triggering
-Route::post('games/{gameId}/fire', [GamePlayController::class, 'fireShot']);
-Route::post('games/{gameId}/abandon', [GamePlayController::class, 'abandonGame']);
-Route::get('games/{gameId}/state', [GamePlayController::class, 'getGameState']);
-Route::get('games/{gameId}/board', [GamePlayController::class, 'getRevealedBoard']); // Renamed from getOpponentBoard
+    // Single Player Game Management
+    Route::post('games/start', [GamePlayController::class, 'startNewGameWithAutoShips']); // New endpoint that auto-places ships
+    Route::post('games/{gameId}/finish', [GameController::class, 'destroy']);
 
-// Rankings
-Route::get('rankings', [RankingController::class, 'index']);
-Route::get('users/{userId}/ranking', [RankingController::class, 'show']);
+    // Game Interaction - Single Player
+    Route::post('games/{gameId}/auto-place-ships', [GamePlayController::class, 'autoPlaceShips']); // Manual triggering
+    Route::post('games/{gameId}/fire', [GamePlayController::class, 'fireShot']);
+    Route::post('games/{gameId}/abandon', [GamePlayController::class, 'abandonGame']);
+    Route::get('games/{gameId}/state', [GamePlayController::class, 'getGameState']);
+    Route::get('games/{gameId}/board', [GamePlayController::class, 'getRevealedBoard']); // Renamed from getOpponentBoard
+
+    // Rankings
+    Route::get('rankings', [RankingController::class, 'index']);
+    Route::get('users/{userId}/ranking', [RankingController::class, 'show']);
+
+});
+

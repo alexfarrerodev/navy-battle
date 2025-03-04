@@ -23,7 +23,7 @@ class GamePlayController extends Controller
         $game = Game::findOrFail($gameId);
         
         // Verify that the game belongs to the authenticated user
-        if ($game->user_id != 14) {
+        if ($game->user_id != Auth::id()) {
             return response()->json(['error' => 'Not authorized to modify this game'], 403);
         }
         
@@ -170,7 +170,7 @@ class GamePlayController extends Controller
         $game = Game::findOrFail($gameId);
         
         // Verify that the game belongs to the authenticated user
-        if ($game->user_id != 14) {
+        if ($game->user_id != Auth::id()) {
             return response()->json(['error' => 'Not authorized to play this game'], 403);
         }
         
@@ -294,7 +294,7 @@ class GamePlayController extends Controller
         $game = Game::with('ships')->findOrFail($gameId);
         
         // Verify that the game belongs to the authenticated user
-        if ($game->user_id != 14) {
+        if ($game->user_id != Auth::id()) {
             return response()->json(['error' => 'Not authorized to view this game'], 403);
         }
         
@@ -329,7 +329,7 @@ public function getRevealedBoard($gameId)
     $game = Game::findOrFail($gameId);
     
     // Verify that the game belongs to the authenticated user
-    if ($game->user_id != 14) {
+    if ($game->user_id != Auth::id()) {
         return response()->json(['error' => 'Not authorized to view this game'], 403);
     }
     
@@ -421,7 +421,7 @@ public function getRevealedBoard($gameId)
         try {
             // Create a new game
             $game = Game::create([
-                'user_id' => 14,
+                'user_id' => Auth::id(),
                 'status' => 'active',
                 'total_shots' => 0,
                 'successful_shots' => 0
@@ -553,7 +553,7 @@ public function abandonGame($gameId)
     $game = Game::findOrFail($gameId);
     
     // Verify that the game belongs to the authenticated user
-    if ($game->user_id != 14) {
+    if ($game->user_id != Auth::id()) {
         return response()->json(['error' => 'Not authorized to modify this game'], 403);
     }
     

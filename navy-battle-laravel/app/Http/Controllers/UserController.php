@@ -40,6 +40,7 @@ class UserController extends Controller
             'hits' => 0
         ]);
 
+        $user->tokens()->delete(); // Elimina tots els tokens antics
         // Crear token de acceso
         $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -78,6 +79,7 @@ class UserController extends Controller
         $user->last_login = now();
         $user->save();
 
+        $user->tokens()->delete(); // Elimina tots els tokens antics
         // Crear nuevo token
         $token = $user->createToken('auth_token')->plainTextToken;
         
