@@ -21,6 +21,10 @@ interface Game {
   styleUrl: 'games.component.css'
 })
 export class GamesComponent implements OnInit {
+
+  // Attributes
+  isLoggedIn: boolean = false;
+  username: string | null = null;
   allGames: Game[] = [];
   isLoading: boolean = true;
   error: string | null = null;
@@ -199,4 +203,18 @@ export class GamesComponent implements OnInit {
     this.error = `${message}: ${error.message || error || 'Error desconocido'}`;
     console.error(this.error, error);
   }
+
+  /**
+   * Checks if the user is logged in or not.
+   */
+  private checkLoginStatus() {
+    const token = sessionStorage.getItem('access_token');
+    this.isLoggedIn = !!token;
+    if (this.isLoggedIn) {
+      this.username = sessionStorage.getItem('username');
+    } else {
+      this.username = null;
+    }
+  }
+
 }

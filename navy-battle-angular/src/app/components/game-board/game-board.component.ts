@@ -16,6 +16,9 @@ export class GameBoardComponent implements OnInit {
   @ViewChild('victoryModal') victoryModal!: ElementRef;
   @ViewChild('gameContainer') gameContainer!: ElementRef;
   
+  // Attributes
+  isLoggedIn: boolean = false;
+  username: string | null = null;
   gameId: number | null = null;
   board: any[][] = [];
   gameState: any = null;
@@ -52,6 +55,13 @@ export class GameBoardComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+
+    this.checkLoginStatus();
+    
+    window.addEventListener('storage', () => {
+      this.checkLoginStatus();
+    });
+
     // Initialize empty board with consistent structure
     this.initializeEmptyBoard();
     
@@ -713,5 +723,18 @@ export class GameBoardComponent implements OnInit {
     }
     // Otherwise, use the index
     return index.toString();
+  }
+
+  /**
+   * Checks if the user is logged in or not.
+   */
+  private checkLoginStatus() {
+    const token = sessionStorage.getItem('access_token');
+    this.isLoggedIn = !!token;
+    if (this.isLoggedIn) {
+      this.username = sessionStorage.getItem('username');
+    } else {
+      this.username = null;
+    }
   }
 }

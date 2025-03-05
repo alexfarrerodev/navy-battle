@@ -1,98 +1,111 @@
-<div class="games-container">
-  <header class="games-header">
-    <h1>Batalla Naval</h1>
-    <p>Selecciona una partida existente o comienza una nueva</p>
-  </header>
+@if (isLoggedIn) {
 
-  <div *ngIf="isLoading" class="loading-container">
-    <div class="loading-spinner"></div>
-    <p>Cargando tus partidas...</p>
-  </div>
-
-  <div *ngIf="error" class="error-message">
-    <p>{{ error }}</p>
-    <button (click)="error = null" class="btn-close">Cerrar</button>
-  </div>
-
-  <div class="new-game-container">
-    <button (click)="startNewGame()" class="btn-new-game" [disabled]="isLoading">
-      <span class="icon">+</span> Nueva Partida
-    </button>
-  </div>
-
-  <div *ngIf="!isLoading && allGames.length === 0" class="no-games-message">
-    <p>No tienes partidas guardadas.</p>
-    <p>¡Comienza una nueva partida para jugar!</p>
-  </div>
-
-  <!-- Sección de juegos activos -->
-  <div *ngIf="!isLoading && activeGames.length > 0" class="games-list">
-    <h2>Partidas Activas</h2>
-    
-    <div class="game-cards">
-      <div *ngFor="let game of activeGames" class="game-card">
-        <div class="flex justify-end">
-          <button class=" flex justify-end mr-5 mt-2 text-3xl cursor-pointer hover:text-red-600 w-fit" (click)="deleteGame($event, game.game_id)" title="Eliminar partida">×</button>
-        </div>
-       
-        <div class="game-info">
-          <h3>Partida #{{ game.game_id }}</h3>
-          <p class="game-date">Iniciada: {{ formatDate(game.start_time) }}</p>
-          <div class="game-stats">
-            <div class="stat">
-              <span class="stat-label">Disparos:</span>
-              <span class="stat-value">{{ game.total_shots }}</span>
-            </div>
-            <div class="stat">
-              <span class="stat-label">Precisión:</span>
-              <span class="stat-value">{{ calculateAccuracy(game) }}</span>
-            </div>
-            <div class="stat">
-              <span class="stat-label">Estado:</span>
-              <span class="stat-value status-active">{{ game.status }}</span>
+  <div class="games-container">
+    <header class="games-header">
+      <h1>Batalla Naval</h1>
+      <p>Selecciona una partida existente o comienza una nueva</p>
+    </header>
+  
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="loading-spinner"></div>
+      <p>Cargando tus partidas...</p>
+    </div>
+  
+    <div *ngIf="error" class="error-message">
+      <p>{{ error }}</p>
+      <button (click)="error = null" class="btn-close">Cerrar</button>
+    </div>
+  
+    <div class="new-game-container">
+      <button (click)="startNewGame()" class="btn-new-game" [disabled]="isLoading">
+        <span class="icon">+</span> Nueva Partida
+      </button>
+    </div>
+  
+    <div *ngIf="!isLoading && allGames.length === 0" class="no-games-message">
+      <p>No tienes partidas guardadas.</p>
+      <p>¡Comienza una nueva partida para jugar!</p>
+    </div>
+  
+    <!-- Sección de juegos activos -->
+    <div *ngIf="!isLoading && activeGames.length > 0" class="games-list">
+      <h2>Partidas Activas</h2>
+      
+      <div class="game-cards">
+        <div *ngFor="let game of activeGames" class="game-card">
+          <div class="flex justify-end">
+            <button class=" flex justify-end mr-5 mt-2 text-3xl cursor-pointer hover:text-red-600 w-fit" (click)="deleteGame($event, game.game_id)" title="Eliminar partida">×</button>
+          </div>
+         
+          <div class="game-info">
+            <h3>Partida #{{ game.game_id }}</h3>
+            <p class="game-date">Iniciada: {{ formatDate(game.start_time) }}</p>
+            <div class="game-stats">
+              <div class="stat">
+                <span class="stat-label">Disparos:</span>
+                <span class="stat-value">{{ game.total_shots }}</span>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Precisión:</span>
+                <span class="stat-value">{{ calculateAccuracy(game) }}</span>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Estado:</span>
+                <span class="stat-value status-active">{{ game.status }}</span>
+              </div>
             </div>
           </div>
+          <div class="game-actions">
+            <button (click)="goToGame(game.game_id)" class="btn-resume">
+              Continuar Partida
+            </button>
+          </div>
         </div>
-        <div class="game-actions">
-          <button (click)="goToGame(game.game_id)" class="btn-resume">
-            Continuar Partida
-          </button>
+      </div>
+    </div>
+  
+    <!-- Sección de juegos finalizados -->
+    <div *ngIf="!isLoading && finishedGames.length > 0" class="games-list finished-games">
+      <h2>Partidas Completadas</h2>
+      
+      <div class="game-cards">
+        <div *ngFor="let game of finishedGames" class="game-card">
+          <div class="game-info">
+            <h3>Partida #{{ game.game_id }}</h3>
+            <p class="game-date">Iniciada: {{ formatDate(game.start_time) }}</p>
+            <p class="game-date" *ngIf="game.end_time">Finalizada: {{ formatDate(game.end_time) }}</p>
+            <div class="game-stats">
+              <div class="stat">
+                <span class="stat-label">Disparos:</span>
+                <span class="stat-value">{{ game.total_shots }}</span>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Precisión:</span>
+                <span class="stat-value">{{ calculateAccuracy(game) }}</span>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Estado:</span>
+                <span class="stat-value status-finished">{{ game.status }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="game-actions">
+            <button (click)="goToGame(game.game_id)" class="btn-view-details">
+              Ver Detalles
+            </button>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Sección de juegos finalizados -->
-  <div *ngIf="!isLoading && finishedGames.length > 0" class="games-list finished-games">
-    <h2>Partidas Completadas</h2>
-    
-    <div class="game-cards">
-      <div *ngFor="let game of finishedGames" class="game-card">
-        <div class="game-info">
-          <h3>Partida #{{ game.game_id }}</h3>
-          <p class="game-date">Iniciada: {{ formatDate(game.start_time) }}</p>
-          <p class="game-date" *ngIf="game.end_time">Finalizada: {{ formatDate(game.end_time) }}</p>
-          <div class="game-stats">
-            <div class="stat">
-              <span class="stat-label">Disparos:</span>
-              <span class="stat-value">{{ game.total_shots }}</span>
-            </div>
-            <div class="stat">
-              <span class="stat-label">Precisión:</span>
-              <span class="stat-value">{{ calculateAccuracy(game) }}</span>
-            </div>
-            <div class="stat">
-              <span class="stat-label">Estado:</span>
-              <span class="stat-value status-finished">{{ game.status }}</span>
-            </div>
-          </div>
-        </div>
-        <div class="game-actions">
-          <button (click)="goToGame(game.game_id)" class="btn-view-details">
-            Ver Detalles
-          </button>
-        </div>
-      </div>
-    </div>
+} @else {
+
+  <div class="flex flex-col items-center text-center p-8 rounded-xl">
+    <h1 class="text-3xl font-bold text-red-600">Denied Access</h1>
+    <p class="text-gray-700 mt-4">Either you are not authorized to access this page, or you are trying to access something you shouldn't.</p>
+    <img src="denied.png" class="mx-auto max-w-max object-contain">
+    <a routerLink="/home" class="mt-6 inline-block bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600">Go home</a>
   </div>
-</div>
+
+}

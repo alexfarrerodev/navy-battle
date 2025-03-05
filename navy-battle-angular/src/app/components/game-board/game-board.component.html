@@ -1,4 +1,6 @@
-<!-- Epic Naval Battle Game -->
+@if (isLoggedIn) {
+
+  <!-- Epic Naval Battle Game -->
 <div #gameContainer class="game-container">
   <!-- Epic game title with 3D effect -->
   <h1 class="game-title">NAVAL BATTLE</h1>
@@ -173,3 +175,14 @@
     <button (click)="restartGame()" class="action-button">New Battle</button>
   </div>
 </div>
+
+} @else {
+
+  <div class="flex flex-col items-center text-center p-8 rounded-xl">
+    <h1 class="text-3xl font-bold text-red-600">Denied Access</h1>
+    <p class="text-gray-700 mt-4">Either you are not authorized to access this page, or you are trying to access something you shouldn't.</p>
+    <img src="denied.png" class="mx-auto max-w-max object-contain">
+    <a routerLink="/home" class="mt-6 inline-block bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600">Go home</a>
+  </div>
+
+}
