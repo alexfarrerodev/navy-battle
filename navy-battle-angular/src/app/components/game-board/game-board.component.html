@@ -1,46 +1,90 @@
-<div class="game-container">
+<!-- Epic Naval Battle Game -->
+<div #gameContainer class="game-container">
+  <!-- Epic game title with 3D effect -->
+  <h1 class="game-title">NAVAL BATTLE</h1>
+  
+  <!-- Animated radar display -->
+  <div class="radar">
+    <div class="radar-sweep"></div>
+    <div class="radar-targets"></div>
+  </div>
+  
+  <!-- Sound controls -->
+  <div class="sound-controls">
+    <button (click)="toggleMute()" class="sound-button" [class.muted]="isMuted">
+      <span *ngIf="!isMuted" class="sound-icon">🔊</span>
+      <span *ngIf="isMuted" class="sound-icon">🔇</span>
+    </button>
+  </div>
+  
   <div class="game-info">
-    <h2>Batalla Naval</h2>
+    <h2>Naval Battle Command</h2>
     
     <div *ngIf="isLoading" class="loading">
-      <p>Cargando el juego...</p>
+      <p>Preparing fleets for combat...</p>
+      <div class="loading-indicator">
+        <div class="loading-bar"></div>
+      </div>
     </div>
     
     <div *ngIf="error" class="error-message">
       <p>{{ error }}</p>
-      <button (click)="error = null">Cerrar</button>
+      <button (click)="error = null" class="action-button">Close</button>
     </div>
     
-    <div *ngIf="message" class="message">
+    <div *ngIf="message" class="message" [class.hit-message]="message.includes('Hit')" [class.miss-message]="message.includes('Miss')">
       <p>{{ message }}</p>
     </div>
     
+    <div *ngIf="warningMessage" class="warning-message">
+      <p>{{ warningMessage }}</p>
+    </div>
+    
     <div *ngIf="gameState && !isLoading" class="game-stats">
-      <h3>Estadísticas del juego</h3>
+      <h3>Battle Statistics</h3>
       <ul>
-        <li><strong>Estado:</strong> {{ gameState.status }}</li>
-        <li><strong>Disparos totales:</strong> {{ gameState.total_shots }}</li>
-        <li><strong>Disparos exitosos:</strong> {{ gameState.successful_shots }}</li>
-        <li><strong>Precisión:</strong> {{ gameState.accuracy }}%</li>
-        <li><strong>Tiempo transcurrido:</strong> {{ gameState.time_elapsed }}s</li>
+        <li><strong>Status:</strong> {{ gameState.status }}</li>
+        <li><strong>Shots fired:</strong> {{ gameState.total_shots }}</li>
+        <li><strong>Hits:</strong> {{ gameState.successful_shots }}</li>
+        <li><strong>Accuracy:</strong> {{ gameState.accuracy }}%</li>
+        <li><strong>Combat time:</strong> {{ gameState.time_elapsed }}s</li>
       </ul>
       
       <div class="ships-status">
-        <h4>Estado de los barcos</h4>
-        <p *ngIf="gameState.ships">
-          <strong>Barcos destruidos:</strong> {{ gameState.ships.destroyed }}/{{ gameState.ships.total }}
-        </p>
+        <h4>Enemy Fleet Status</h4>
+        <div *ngIf="gameState.ships" class="fleet-status">
+          <div class="progress-container">
+            <div class="progress-bar" [style.width.%]="(gameState.ships.destroyed / gameState.ships.total) * 100"></div>
+          </div>
+          <p><strong>Ships sunk:</strong> {{ gameState.ships.destroyed }}/{{ gameState.ships.total }}</p>
+          
+          <!-- Ship icons with status and animations -->
+          <div class="ship-icons">
+            <div class="ship-item" *ngFor="let i of [0,1,2,3,4]" [class.destroyed]="i < gameState.ships.destroyed">
+              <div class="ship-icon" [class.destroyed]="i < gameState.ships.destroyed">
+                <div class="ship-smoke" *ngIf="i < gameState.ships.destroyed"></div>
+              </div>
+              <span>{{ i < gameState.ships.destroyed ? 'Sunk' : 'Active' }}</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     
     <div class="actions">
-      <button (click)="restartGame()" [disabled]="isLoading">Nuevo juego</button>
-      <button (click)="finishGame()" [disabled]="isLoading || isGameOver">Guardar y salir</button>
+      <button (click)="restartGame()" [disabled]="isLoading" class="action-button">
+        <span class="button-icon">🔄</span> New Battle
+      </button>
+      <button (click)="finishGame()" [disabled]="isLoading || isGameOver" class="action-button leave-button">
+        <span class="button-icon">🚪</span> Leave Mission
+      </button>
     </div>
   </div>
   
-  <!-- El tablero se renderiza siempre, pero se oculta con CSS si no hay datos -->
-  <div class="board-container" [class.hidden]="isLoading || board.length === 0">
+  <!-- Battle board with enhanced animations and effects -->
+  <div class="board-container" [class.hidden]="isLoading || board.length === 0" [class.game-over]="isGameOver">
+    <h3 class="board-title">BATTLE ZONE</h3>
+    
     <div class="board-labels horizontal">
       <div class="label" *ngFor="let i of [0,1,2,3,4,5,6,7,8,9]">{{ i }}</div>
     </div>
@@ -51,7 +95,14 @@
       </div>
       
       <div class="board">
-        <!-- Usar trackBy para preservar elementos durante la actualización -->
+        <!-- Targeting grid overlay inside the board -->
+        <div class="targeting-grid"></div>
+        
+        <!-- Enhanced water effects -->
+        <div class="water-effect"></div>
+        <div class="water-ripples"></div>
+        
+        <!-- Use trackBy to preserve elements during update -->
         <div class="row" *ngFor="let row of board; let y = index; trackBy: trackRow">
           <div 
             class="cell" 
@@ -59,11 +110,18 @@
             [ngClass]="getCellClass(cell)"
             (click)="handleCellClick(x, y)"
             [class.selected]="selectedCell && selectedCell.x === x && selectedCell.y === y"
+            [class.ship-sunk]="cell.hit && cell.ship_type && cell.part_of_ship === 'destroyed'"
+            [style.animation-delay.s]="cell.animationDelay"
           >
-            <!-- Mostrar el tipo de barco si está disponible -->
-            <span *ngIf="cell.hit && cell.ship_type" class="ship-label">
-              {{ cell.ship_type.charAt(0).toUpperCase() }}
-            </span>
+            <!-- Add effects for hits and misses -->
+            <div *ngIf="cell.hit && cell.ship_type" class="explosion-effect"></div>
+            <div *ngIf="cell.hit && !cell.ship_type" class="splash-effect"></div>
+            
+            <!-- Add targeting crosshair -->
+            <div *ngIf="selectedCell && selectedCell.x === x && selectedCell.y === y" class="crosshair"></div>
+            
+            <!-- Ship wreck when ship is destroyed -->
+            <div *ngIf="cell.hit && cell.ship_type && cell.part_of_ship === 'destroyed'" class="battleship-wreck"></div>
           </div>
         </div>
       </div>
@@ -73,15 +131,45 @@
   <div class="legend" *ngIf="!isLoading">
     <div class="legend-item">
       <div class="legend-cell unknown"></div>
-      <span>Desconocido</span>
+      <span>Unexplored waters</span>
     </div>
     <div class="legend-item">
       <div class="legend-cell hit"></div>
-      <span>Impacto</span>
+      <span>Confirmed hit</span>
     </div>
     <div class="legend-item">
       <div class="legend-cell miss"></div>
-      <span>Agua</span>
+      <span>Shot missed</span>
     </div>
+  </div>
+  
+  <!-- Enhanced animated water effects -->
+  <div class="water-animation">
+    <div class="wave wave1"></div>
+    <div class="wave wave2"></div>
+    <div class="wave wave3"></div>
+  </div>
+  
+  <!-- Custom cursor element -->
+  <div class="custom-cursor"></div>
+  
+  <!-- Floating particles effect -->
+  <div class="particles-container">
+    <div class="particle" *ngFor="let i of [0,1,2,3,4,5,6,7,8,9]"></div>
+  </div>
+</div>
+
+<!-- Victory modal with animations -->
+<div #victoryModal class="victory-modal">
+  <div class="victory-content">
+    <h2>MISSION ACCOMPLISHED</h2>
+    <p>All enemy ships have been destroyed!</p>
+    <div class="victory-stats" *ngIf="gameState">
+      <p><strong>Total shots:</strong> {{ gameState.total_shots }}</p>
+      <p><strong>Accuracy:</strong> {{ gameState.accuracy }}%</p>
+      <p><strong>Combat time:</strong> {{ gameState.time_elapsed }}s</p>
+    </div>
+    <button (click)="closeVictoryModal()" class="action-button">Close</button>
+    <button (click)="restartGame()" class="action-button">New Battle</button>
   </div>
 </div>

@@ -31,6 +31,10 @@
     
     <div class="game-cards">
       <div *ngFor="let game of activeGames" class="game-card">
+        <div class="flex justify-end">
+          <button class=" flex justify-end mr-5 mt-2 text-3xl cursor-pointer hover:text-red-600 w-fit" (click)="deleteGame($event, game.game_id)" title="Eliminar partida">×</button>
+        </div>
+       
         <div class="game-info">
           <h3>Partida #{{ game.game_id }}</h3>
           <p class="game-date">Iniciada: {{ formatDate(game.start_time) }}</p>
