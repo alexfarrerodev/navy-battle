@@ -117,6 +117,30 @@ export class GamesComponent implements OnInit {
       }
     });
   }
+  deleteGame(event: Event, gameId: number): void {
+    // Prevenir que el evento se propague al contenedor padre
+    event.stopPropagation();
+    
+    // Pedir confirmación antes de eliminar
+    if (confirm('¿Estás seguro de que deseas eliminar esta partida? Esta acción no se puede deshacer.')) {
+      this.isLoading = true;
+      
+      // Llamar al endpoint para eliminar el juego
+      this.navalApiService.deleteGame(gameId).subscribe({
+        next: (response) => {
+          console.log('Juego eliminado:', response);
+          
+          // Actualizar la lista de juegos (eliminar el juego de la lista)
+          this.allGames = this.allGames.filter(game => game.game_id !== gameId);
+          
+          this.isLoading = false;
+        },
+        error: (error) => {
+          this.handleError('Error al eliminar el juego', error);
+        }
+      });
+    }
+  }
 
   startNewGame(): void {
     this.isLoading = true;

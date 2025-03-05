@@ -8,6 +8,7 @@ use App\Models\Board;
 use App\Models\Ship;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class GameController extends Controller
 {
@@ -135,16 +136,41 @@ class GameController extends Controller
         return response()->json($game);
     }
 
-    /**
-     * Eliminar un juego
-     */
-    public function destroy($id)
-    {
+   /**
+ * Eliminar un juego
+ */
+public function destroy($id)
+{
+    try {
+        // Obtener el juego
         $game = Game::findOrFail($id);
+        
+        // Iniciar una transacción para mantener la integridad de los datos
+        DB::beginTransaction();
+        
+        // Eliminar los barcos asociados al juego
+        Ship::where('game_id', $id)->delete();
+        
+        // Eliminar el tablero asociado al juego
+        Board::where('game_id', $id)->delete();
+        
+        // Finalmente, eliminar el juego
         $game->delete();
         
-        return response()->json(null, 204);
+        // Confirmar la transacción
+        DB::commit();
+        
+        return response()->json(['message' => 'Juego eliminado correctamente'], 200);
+    } catch (\Exception $e) {
+        // Revertir la transacción en caso de error
+        DB::rollBack();
+        
+        return response()->json([
+            'error' => 'Error al eliminar el juego',
+            'message' => $e->getMessage()
+        ], 500);
     }
+}
     
     /**
      * Listar juegos activos
