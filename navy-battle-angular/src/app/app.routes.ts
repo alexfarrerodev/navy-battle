@@ -19,5 +19,6 @@ export const routes: Routes = [
     {path: "game-board", component: GameBoardComponent},
     {path: "statistics", component: StatisticsComponent},
     {path: "contact-form",component: ContactFormComponent},
+    {path: "game-board/:id", component: GameBoardComponent},
     {path: "**", component: Nf404Component}
 ];

@@ -32,11 +32,16 @@ export class NavalApiService {
 
   // Game management endpoints
   startGame(): Observable<any> {
-    return this.http.post(`${this.apiUrl}/games/start`, {}, this.getAuthHeaders());
+    return this.http.post(`${this.apiUrl}/games/start-auto`, {}, this.getAuthHeaders());
   }
 
   getBoard(gameId: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/games/${gameId}/board`, this.getAuthHeaders());
+  }
+
+  // Get the revealed board showing hits/misses
+  getRevealedBoard(gameId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/games/${gameId}/revealed-board`, this.getAuthHeaders());
   }
 
   fireShot(gameId: number, x: number, y: number): Observable<any> {
@@ -70,7 +75,8 @@ export class NavalApiService {
     return this.http.get(`${this.apiUrl}/games/history/completed`, this.getAuthHeaders());
   }
 
-  finishGame(gameId: number): Observable<any> {
+  // Abandonar un juego pero mantenerlo activo para reanudar después
+  abandonGame(gameId: number): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/games/${gameId}/abandon`, {}, this.getAuthHeaders());
   }
 

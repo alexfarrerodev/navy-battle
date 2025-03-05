@@ -44,27 +44,24 @@ export class GamesComponent implements OnInit {
         // Asegurarse de que la respuesta tenga la estructura esperada
         if (response && response.games && Array.isArray(response.games)) {
           this.allGames = response.games;
-          console.log(`Total de juegos cargados: ${this.allGames.length}`);
-          console.log(`Juegos activos: ${this.activeGames.length}`);
-          console.log(`Juegos finalizados: ${this.finishedGames.length}`);
-        } else {
-          // Si la estructura es diferente, intentamos adaptarnos
-          if (response && Array.isArray(response)) {
-            // Si la respuesta es directamente un array
-            this.allGames = response;
-          } else if (response && typeof response === 'object') {
-            // Si la respuesta es un objeto pero sin la propiedad 'games'
-            // Intentamos extraer los datos de manera diferente
-            const possibleGames = Object.values(response).find(val => Array.isArray(val));
-            if (possibleGames) {
-              this.allGames = possibleGames as Game[];
-            } else {
-              this.handleError('Formato de respuesta inválido', 'La API no devolvió la estructura esperada de juegos');
-            }
+        } else if (response && Array.isArray(response)) {
+          // Si la respuesta es directamente un array
+          this.allGames = response;
+        } else if (response && typeof response === 'object') {
+          // Si la respuesta es un objeto pero sin la propiedad 'games'
+          const possibleGames = Object.values(response).find(val => Array.isArray(val));
+          if (possibleGames) {
+            this.allGames = possibleGames as Game[];
           } else {
             this.handleError('Formato de respuesta inválido', 'La API no devolvió la estructura esperada de juegos');
           }
+        } else {
+          this.handleError('Formato de respuesta inválido', 'La API no devolvió la estructura esperada de juegos');
         }
+        
+        console.log(`Total de juegos cargados: ${this.allGames.length}`);
+        console.log(`Juegos activos: ${this.activeGames.length}`);
+        console.log(`Juegos finalizados: ${this.finishedGames.length}`);
         
         this.isLoading = false;
       },
@@ -75,17 +72,44 @@ export class GamesComponent implements OnInit {
   }
 
   goToGame(gameId: number): void {
-    // En lugar de simplemente navegar, primero recuperamos el estado del juego mediante el endpoint de resume
+    const game = this.allGames.find(g => g.game_id === gameId);
+    
+    if (game && game.status === 'active') {
+      // Si es un juego activo, usamos resumeGame para obtener todos los datos necesarios
+      this.resumeGame(gameId);
+    } else if (game && game.status === 'finished') {
+      // Si es un juego finalizado, simplemente mostramos los detalles
+      this.router.navigate(['/game-board', gameId], {
+        state: { viewOnly: true }
+      });
+    } else {
+      this.handleError(`Error al acceder al juego #${gameId}`, 'Estado de juego desconocido');
+    }
+  }
+
+  resumeGame(gameId: number): void {
     this.isLoading = true;
     
     this.navalApiService.resumeGame(gameId).subscribe({
       next: (response) => {
-        console.log('Juego recuperado:', response);
-        // Almacenamos el estado recuperado en el almacenamiento de sesión para que el componente del tablero pueda acceder a él
-        sessionStorage.setItem('resumedGameState', JSON.stringify(response));
+        console.log('Datos del juego recuperado:', response);
         
-        // Navegamos al componente del tablero con el ID del juego
-        this.router.navigate(['/game-board', gameId]);
+        // Verificar que la respuesta contenga los datos necesarios
+        if (response) {
+          // Almacenamos el estado completo del juego para que el componente del tablero pueda usarlo
+          sessionStorage.setItem('resumedGameState', JSON.stringify(response));
+          
+          // Navegamos al componente del tablero con el ID del juego
+          this.router.navigate(['/game-board', gameId], {
+            state: { 
+              resumedGame: true,
+              gameData: response
+            }
+          });
+        } else {
+          this.handleError(`Error al reanudar el juego #${gameId}`, 'Datos del juego incompletos');
+        }
+        
         this.isLoading = false;
       },
       error: (error) => {
@@ -101,14 +125,23 @@ export class GamesComponent implements OnInit {
       next: (response) => {
         console.log('Respuesta al crear juego:', response);
         
-        if (response.game && response.game.game_id) {
-          this.router.navigate(['/game-board']);
+        if (response && response.game && response.game.game_id) {
+          // Navegamos al tablero de juego con el nuevo ID
+          this.router.navigate(['/game-board', response.game.game_id], {
+            state: { 
+              newGame: true,
+              gameData: response
+            }
+          });
         } else {
-          this.handleError('Error al crear nuevo juego', 'No se recibió ID de juego');
+          this.handleError('Error al crear nuevo juego', 'No se recibió ID de juego válido');
         }
+        
+        this.isLoading = false;
       },
       error: (error) => {
         this.handleError('Error al crear nuevo juego', error);
+        this.isLoading = false;
       }
     });
   }
