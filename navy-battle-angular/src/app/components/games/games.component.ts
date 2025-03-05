@@ -102,7 +102,7 @@ export class GamesComponent implements OnInit {
         console.log('Respuesta al crear juego:', response);
         
         if (response.game && response.game.game_id) {
-          this.router.navigate(['/game-board', response.game.game_id]);
+          this.router.navigate(['/game-board']);
         } else {
           this.handleError('Error al crear nuevo juego', 'No se recibió ID de juego');
         }
