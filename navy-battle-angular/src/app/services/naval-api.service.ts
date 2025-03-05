@@ -6,7 +6,9 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class NavalApiService {
-  private apiUrl = 'http://localhost:8000';
+  private apiUrl = 'http://192.168.143.67:10035';
+
+  //private apiUrl = 'http://localhost:8000'; this in case of local functionality
 
   constructor(private http: HttpClient) { }
 
