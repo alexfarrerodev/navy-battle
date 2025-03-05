@@ -40,21 +40,63 @@ export class GameBoardComponent implements OnInit {
       if (params['id']) {
         this.gameId = +params['id'];
         
-        // Comprobar si hay un estado de juego reanudado en sessionStorage
-        const resumedGameState = sessionStorage.getItem('resumedGameState');
-        
-        if (resumedGameState) {
-          // Si hay un estado guardado, lo cargamos directamente
-          this.loadResumedGameState(JSON.parse(resumedGameState));
-          // Limpiamos el estado guardado para evitar conflictos en futuras cargas
-          sessionStorage.removeItem('resumedGameState');
+        // Verificar si hay datos de navegación (state)
+        const navigation = this.router.getCurrentNavigation();
+        if (navigation?.extras.state) {
+          const state = navigation.extras.state as any;
+          
+          if (state.resumedGame && state.gameData) {
+            // Si la navegación incluye datos de un juego reanudado, usarlos directamente
+            this.loadResumedGameState(state.gameData);
+          } else {
+            // Comprobar si hay un estado de juego reanudado en sessionStorage
+            const resumedGameState = sessionStorage.getItem('resumedGameState');
+            
+            if (resumedGameState) {
+              // Si hay un estado guardado, lo cargamos directamente
+              this.loadResumedGameState(JSON.parse(resumedGameState));
+              // Limpiamos el estado guardado para evitar conflictos en futuras cargas
+              sessionStorage.removeItem('resumedGameState');
+            } else {
+              // Si no hay estado guardado, cargamos el juego normalmente
+              this.loadGame();
+            }
+          }
         } else {
-          // Si no hay estado guardado, cargamos el juego normalmente
-          this.loadGame();
+          // Comprobar si hay un estado de juego reanudado en sessionStorage
+          const resumedGameState = sessionStorage.getItem('resumedGameState');
+          
+          if (resumedGameState) {
+            // Si hay un estado guardado, lo cargamos directamente
+            this.loadResumedGameState(JSON.parse(resumedGameState));
+            // Limpiamos el estado guardado para evitar conflictos en futuras cargas
+            sessionStorage.removeItem('resumedGameState');
+          } else {
+            // Si no hay estado guardado, intentamos reanudar el juego mediante el endpoint
+            this.resumeGame();
+          }
         }
       } else {
         // Si no hay ID, intentar crear un nuevo juego
         this.createNewGame();
+      }
+    });
+  }
+
+  // Método específico para reanudar un juego usando el endpoint /resume
+  resumeGame(): void {
+    if (!this.gameId) return;
+
+    this.isLoading = true;
+    this.navalApiService.resumeGame(this.gameId).subscribe({
+      next: (resumeData) => {
+        // Procesar los datos del juego reanudado
+        this.loadResumedGameState(resumeData);
+      },
+      error: (error) => {
+        console.error('Error al reanudar el juego:', error);
+        // Si falla la reanudación, intentamos cargar el juego normalmente
+        this.loadGame();
       }
     });
   }
@@ -65,7 +107,11 @@ export class GameBoardComponent implements OnInit {
       console.log('Cargando estado reanudado:', resumedState);
       
       // Actualizar el estado del juego
-      this.gameState = resumedState.game;
+      if (resumedState.game) {
+        this.gameState = resumedState.game;
+      } else {
+        this.gameState = resumedState; // En caso de que el objeto raíz sea el estado del juego
+      }
       
       // Comprobar si el juego está terminado
       this.isGameOver = this.gameState.status === 'completed' || 
@@ -159,7 +205,7 @@ export class GameBoardComponent implements OnInit {
     this.isLoading = true;
     
     // Cargar el estado del tablero
-    this.navalApiService.getBoard(this.gameId).subscribe({
+    this.navalApiService.getRevealedBoard(this.gameId).subscribe({
       next: (response) => {
         // Actualizar el estado del tablero sin recrearlo
         this.updateBoardFromResponse(response.board);
@@ -337,7 +383,7 @@ export class GameBoardComponent implements OnInit {
   finishGame(): void {
     if (!this.gameId) return;
 
-    this.navalApiService.finishGame(this.gameId).subscribe({
+    this.navalApiService.abandonGame(this.gameId).subscribe({
       next: (response) => {
         this.message = response.message;
         // No cambiar isGameOver a true para que pueda reanudarse después
