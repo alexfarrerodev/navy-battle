@@ -14,10 +14,10 @@ class GameHistoryController extends Controller
      */
     public function index()
     {
-        $games = Game::where('user_id', 14)
+        $games = Game::where('user_id', Auth::id())
             ->orderBy('created_at', 'desc')
             ->get();
-            
+        
         return response()->json([
             'total_games' => $games->count(),
             'games' => $games->map(function($game) {
@@ -68,14 +68,14 @@ class GameHistoryController extends Controller
     public function resumeGame($gameId)
     {
         $game = Game::findOrFail($gameId);
-        
+       
         // Verify that the game belongs to the authenticated user
-        if ($game->user_id != Auth::id()) {
+        if ($game->user_id !== Auth::id()) {
             return response()->json(['error' => 'Not authorized to access this game'], 403);
         }
         
         // Check if the game can be resumed
-        if (!in_array($game->status, ['ready', 'in_progress'])) {
+        if (!in_array($game->status, ['active'])) {
             return response()->json([
                 'error' => 'This game cannot be resumed',
                 'status' => $game->status,
