@@ -13,6 +13,8 @@ export class LoginFormComponent {
 
   // Attributes
   form: FormGroup;
+  isLoggedIn: boolean = false;
+  username: string | null = null;
   
   // Constructor
   constructor(private navalApiService: NavalApiService, private router: Router) {
@@ -21,6 +23,30 @@ export class LoginFormComponent {
       password: new FormControl('', [Validators.required, Validators.minLength(6)]),
       rememberMe: new FormControl(false)
     });
+  }
+
+  // METHODS
+  ngOnInit() {
+  
+    this.checkLoginStatus();
+    
+    window.addEventListener('storage', () => {
+      this.checkLoginStatus();
+    });
+
+  }
+
+  /**
+   * Checks if the user is logged in or not.
+   */
+  private checkLoginStatus() {
+    const token = sessionStorage.getItem('access_token');
+    this.isLoggedIn = !!token;
+    if (this.isLoggedIn) {
+      this.username = sessionStorage.getItem('username');
+    } else {
+      this.username = null;
+    }
   }
 
   /**

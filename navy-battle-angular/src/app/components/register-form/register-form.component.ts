@@ -17,6 +17,10 @@ export class RegisterFormComponent {
   StrongPasswordRegx: RegExp = /^(?=[^A-Z]*[A-Z])(?=[^a-z]*[a-z])(?=\D*\d).{8,}$/;
   age!: number;
   acceptTerms : boolean = false;
+
+  // Attributes
+  isLoggedIn: boolean = false;
+  username: string | null = null;
   
   // Constructor
   constructor(private navalApiService: NavalApiService, private router: Router) {
@@ -31,6 +35,29 @@ export class RegisterFormComponent {
   
 
   // METHODS
+
+  ngOnInit() {
+  
+    this.checkLoginStatus();
+    
+    window.addEventListener('storage', () => {
+      this.checkLoginStatus();
+    });
+
+  }
+
+  /**
+   * Checks if the user is logged in or not.
+   */
+  private checkLoginStatus() {
+    const token = sessionStorage.getItem('access_token');
+    this.isLoggedIn = !!token;
+    if (this.isLoggedIn) {
+      this.username = sessionStorage.getItem('username');
+    } else {
+      this.username = null;
+    }
+  }
 
   /**
    * Performs the register of the user. (or tries it)
