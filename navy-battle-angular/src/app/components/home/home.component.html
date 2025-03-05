@@ -61,7 +61,13 @@
         <div class="container mx-auto px-4 text-center">
           <h2 class="text-3xl font-bold mb-6">READY TO SET SAIL?</h2>
           <p class="text-xl mb-8 max-w-2xl mx-auto">Get ready for the action and battle your way to victory!</p>
-          <button class="bg-white text-red-700 hover:bg-gray-100 font-bold py-3 px-8 rounded-full text-lg transform transition hover:scale-105 shadow-lg"><a href="/game-board">PLAY NOW</a></button>
+          <button class="bg-white text-red-700 hover:bg-gray-100 font-bold py-3 px-8 rounded-full text-lg transform transition hover:scale-105 shadow-lg">
+            @if (isLoggedIn) {
+              <a routerLink="/game-board">PLAY NOW</a>
+            } @else {
+              <a routerLink="/login">PLAY NOW</a>
+            }
+          </button>
         </div>
       </div>
 

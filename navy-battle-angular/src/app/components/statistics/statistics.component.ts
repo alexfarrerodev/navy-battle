@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
-import { NgFor } from '@angular/common';
 import { 
   Chart, 
   BarController, 
   PieController, 
   BarElement, 
   LineElement, 
-  ArcElement,  // Add this import
+  ArcElement,
   CategoryScale, 
   LinearScale, 
   Title, 
@@ -21,7 +20,7 @@ Chart.register(
   PieController,
   BarElement,
   LineElement,
-  ArcElement,  // Add this registration
+  ArcElement, 
   CategoryScale,
   LinearScale,
   Title,
@@ -32,9 +31,8 @@ Chart.register(
 @Component({
   selector: 'app-statistics',
   standalone: true,
-  imports: [NgFor, BaseChartDirective],
-  templateUrl: './statistics.component.html',
-  styleUrl: './statistics.component.css'
+  imports: [BaseChartDirective],
+  templateUrl: './statistics.component.html'
 })
 export class StatisticsComponent {
   totalGames: number = 120;

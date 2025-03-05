@@ -6,10 +6,12 @@
     
     <div class="flex space-x-4">
         <a href="https://github.com/alexfarrerodev/navy-battle" class="hover:underline">About us</a>
-        <a href="/statistics" class="hover:underline">Statistics</a>
-        <a href="/contact-form" class="hover:underline">Contact</a>
+        @if (isLoggedIn) {
+            <a routerLink="/statistics" class="hover:underline">Statistics</a>
+        } @else {
+            <a routerLink="/login" class="hover:underline">Statistics</a>
+        }
+        <a routerLink="/contact-form" class="hover:underline">Contact</a>
     </div>
 
 </footer>
-
-
