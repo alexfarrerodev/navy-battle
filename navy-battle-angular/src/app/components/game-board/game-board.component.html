@@ -49,7 +49,7 @@
         <li><strong> &nbsp; Shots fired:</strong> &nbsp; {{ gameState.total_shots }}</li>
         <li><strong> &nbsp; Hits:</strong> &nbsp; {{ gameState.successful_shots }}</li>
         <li><strong> &nbsp; Accuracy:</strong> &nbsp; {{ gameState.accuracy }}%</li>
-        <li><strong> &nbsp; Combat time:</strong> &nbsp; {{ gameState.time_elapsed }}s</li>
+        <li><strong> &nbsp; Combat time:</strong> &nbsp; {{ formattedTime }}</li>
       </ul>
       
       <div class="ships-status">
@@ -169,7 +169,7 @@
     <div class="victory-stats" *ngIf="gameState">
       <p><strong>Total shots:</strong> {{ gameState.total_shots }}</p>
       <p><strong>Accuracy:</strong> {{ gameState.accuracy }}%</p>
-      <p><strong>Combat time:</strong> {{ gameState.time_elapsed }}s</p>
+      <p><strong>Combat time:</strong> {{ formattedTime }}</p>
     </div>
     <button (click)="closeVictoryModal()" class="action-button">Close</button>
     <button (click)="restartGame()" class="action-button">New Battle</button>

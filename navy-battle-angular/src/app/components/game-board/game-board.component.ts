@@ -1,8 +1,9 @@
-import { Component, OnInit, ElementRef, ViewChild, Renderer2 } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, Renderer2, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { NavalApiService } from '../../services/naval-api.service';
+import { interval, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-game-board',
@@ -12,7 +13,7 @@ import { NavalApiService } from '../../services/naval-api.service';
   styleUrl: './game-board.component.css',
   providers: [NavalApiService]
 })
-export class GameBoardComponent implements OnInit {
+export class GameBoardComponent implements OnInit, OnDestroy {
   @ViewChild('victoryModal') victoryModal!: ElementRef;
   @ViewChild('gameContainer') gameContainer!: ElementRef;
   
@@ -29,6 +30,13 @@ export class GameBoardComponent implements OnInit {
   isGameOver: boolean = false;
   selectedCell: { x: number, y: number } | null = null;
   isMuted: boolean = false;
+  
+  // Tiempo transcurrido formateado
+  formattedTime: string = '0s';
+  // Suscripción para actualizar el tiempo
+  private timerSubscription: Subscription | null = null;
+  // Tiempo inicial para calcular la duración
+  private gameStartTime: number = 0;
   
   // Sound effects
   private sfx = {
@@ -55,7 +63,6 @@ export class GameBoardComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-
     this.checkLoginStatus();
     
     window.addEventListener('storage', () => {
@@ -126,6 +133,57 @@ export class GameBoardComponent implements OnInit {
     Object.values(this.sfx).forEach(audio => {
       audio.pause();
       audio.currentTime = 0;
+    });
+    
+    // Detener la suscripción del timer al destruir el componente
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+    }
+  }
+  
+  // Método para formatear el tiempo en horas, minutos y segundos
+  formatTimeElapsed(seconds: number): string {
+    if (seconds < 60) {
+      return `${seconds}s`;
+    } else if (seconds < 3600) {
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = seconds % 60;
+      return `${minutes}m ${remainingSeconds}s`;
+    } else {
+      const hours = Math.floor(seconds / 3600);
+      const remainingMinutes = Math.floor((seconds % 3600) / 60);
+      const remainingSeconds = seconds % 60;
+      return `${hours}h ${remainingMinutes}m ${remainingSeconds}s`;
+    }
+  }
+  
+  // Método para iniciar el temporizador
+  startTimer(initialSeconds: number): void {
+    // Detener cualquier temporizador activo
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+    }
+    
+    // Calcular el tiempo inicial basado en los segundos proporcionados
+    this.gameStartTime = Date.now() - (initialSeconds * 1000);
+    
+    // Formatear el tiempo inicial
+    this.formattedTime = this.formatTimeElapsed(initialSeconds);
+    
+    // Iniciar un timer que se actualiza cada segundo
+    this.timerSubscription = interval(1000).subscribe(() => {
+      if (!this.isGameOver) {
+        // Calcular tiempo transcurrido en segundos
+        const elapsedSeconds = Math.floor((Date.now() - this.gameStartTime) / 1000);
+        
+        // Actualizar el tiempo formateado
+        this.formattedTime = this.formatTimeElapsed(elapsedSeconds);
+        
+        // Actualizar el valor en el gameState para mantener la consistencia
+        if (this.gameState) {
+          this.gameState.time_elapsed = elapsedSeconds;
+        }
+      }
     });
   }
   
@@ -218,6 +276,11 @@ export class GameBoardComponent implements OnInit {
       this.warningMessage = null;
       
       this.isLoading = false;
+      
+      // Iniciar el temporizador con el tiempo transcurrido del juego
+      if (this.gameState && this.gameState.time_elapsed !== undefined) {
+        this.startTimer(this.gameState.time_elapsed);
+      }
       
       // Check for victory conditions in resumed game
       if (this.isGameOver && this.gameState.status === 'completed') {
@@ -320,6 +383,11 @@ export class GameBoardComponent implements OnInit {
                            || stateResponse.status === 'finished';
             this.isLoading = false;
             
+            // Iniciar el temporizador con el tiempo transcurrido del juego
+            if (this.gameState && this.gameState.time_elapsed !== undefined) {
+              this.startTimer(this.gameState.time_elapsed);
+            }
+            
             // Add visual enhancements
             this.enhanceBoardVisualsAfterLoad();
             
@@ -416,6 +484,9 @@ export class GameBoardComponent implements OnInit {
         
         // Load the new game board
         this.loadGame();
+        
+        // Iniciar el temporizador a 0 para un nuevo juego
+        this.startTimer(0);
         
         // Play start game sound
         setTimeout(() => {
@@ -694,6 +765,12 @@ export class GameBoardComponent implements OnInit {
       next: (response) => {
         this.message = response.message;
         // Don't change isGameOver to true so it can be resumed later
+        
+        // Detener el temporizador
+        if (this.timerSubscription) {
+          this.timerSubscription.unsubscribe();
+          this.timerSubscription = null;
+        }
         
         // Redirect to games page
         this.router.navigate(['/games']);
