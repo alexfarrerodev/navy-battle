@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "navy-battle-angular": "file:navy-battle-angular"
+  }
+}
