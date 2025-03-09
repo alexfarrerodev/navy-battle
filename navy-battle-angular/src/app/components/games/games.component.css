@@ -1,31 +1,41 @@
-/* CSS Styles */
+/* CSS Styles with Military Theme */
+@import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Exo+2:wght@400;700&family=Orbitron:wght@400;700;900&display=swap');
+
 .games-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Exo 2', sans-serif;
   background-color: #f8f9fa;
+  border: 2px solid #333;
+  border-radius: 8px;
 }
 
 .games-header {
   text-align: center;
   margin-bottom: 30px;
+  border-bottom: 3px solid rgba(231, 76, 60, 0.7);
+  padding-bottom: 15px;
 }
 
 .games-header h1 {
-  color: #2c3e50;
+  color: #e74c3c;
   font-size: 2.5rem;
   margin-bottom: 10px;
   text-transform: uppercase;
   font-weight: bold;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
   position: relative;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  font-family: 'Black Ops One', cursive;
 }
 
 .games-header p {
-  color: #7f8c8d;
+  color: #5a6268;
   font-size: 1.2rem;
+  font-family: 'Exo 2', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .loading-container {
@@ -34,10 +44,12 @@
   align-items: center;
   justify-content: center;
   padding: 40px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
 }
 
 .loading-spinner {
-  border: 5px solid #f3f3f3;
+  border: 5px solid rgba(0, 0, 0, 0.1);
   border-top: 5px solid #e74c3c;
   border-radius: 50%;
   width: 50px;
@@ -52,7 +64,7 @@
 }
 
 .error-message {
-  background-color: #f8d7da;
+  background-color: rgba(231, 76, 60, 0.2);
   color: #721c24;
   padding: 15px;
   border-radius: 5px;
@@ -60,6 +72,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-left: 4px solid #e74c3c;
 }
 
 .btn-close {
@@ -80,7 +93,7 @@
   background-color: #e74c3c;
   color: white;
   border: none;
-  border-radius: 50px;
+  border-radius: 0;
   padding: 12px 25px;
   font-size: 1.1rem;
   cursor: pointer;
@@ -90,6 +103,10 @@
   font-weight: bold;
   text-transform: uppercase;
   box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 1px;
+  position: relative;
+  clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
 }
 
 .btn-new-game:hover {
@@ -111,8 +128,11 @@
   text-align: center;
   padding: 40px;
   background-color: white;
-  border-radius: 10px;
+  border-radius: 0;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border: 1px dashed #999;
+  background-image: linear-gradient(45deg, rgba(0, 0, 0, 0.03) 25%, transparent 25%, transparent 50%, rgba(0, 0, 0, 0.03) 50%, rgba(0, 0, 0, 0.03) 75%, transparent 75%, transparent);
+  background-size: 10px 10px;
 }
 
 .games-list {
@@ -121,16 +141,31 @@
 
 .games-list h2 {
   margin-bottom: 20px;
-  color: #2c3e50;
+  color: #333;
   border-bottom: 2px solid #e74c3c;
   padding-bottom: 10px;
   text-transform: uppercase;
   font-weight: 700;
   letter-spacing: 1px;
+  font-family: 'Orbitron', sans-serif;
+  display: inline-block;
+  position: relative;
+  padding-left: 20px;
+}
+
+.games-list h2::before {
+  content: '☰';
+  position: absolute;
+  left: 0;
+  color: #e74c3c;
 }
 
 .finished-games h2 {
   border-bottom-color: #95a5a6;
+}
+
+.finished-games h2::before {
+  content: '✓';
 }
 
 .game-cards {
@@ -141,13 +176,15 @@
 
 .game-card {
   background-color: #fff;
-  border-radius: 10px;
+  border-radius: 0;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05);
   overflow: hidden;
   transition: transform 0.3s, box-shadow 0.3s;
   display: flex;
   flex-direction: column;
   position: relative;
+  border: 1px solid #ddd;
+  background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23e74c3c' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 5v1H0z'/%3E%3Cpath d='M6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
 }
 
 .game-card:hover {
@@ -161,8 +198,9 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 3px;
+  height: 5px;
   background-color: #e74c3c;
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0, 0, 0, 0.1) 10px, rgba(0, 0, 0, 0.1) 20px);
 }
 
 .game-info {
@@ -174,12 +212,26 @@
   margin: 0 0 10px;
   color: #2c3e50;
   font-weight: bold;
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 1px;
+  border-left: 3px solid #e74c3c;
+  padding-left: 10px;
 }
 
 .game-date {
   color: #7f8c8d;
   font-size: 0.9rem;
   margin-bottom: 10px;
+  font-family: 'Exo 2', sans-serif;
+  position: relative;
+  padding-left: 15px;
+}
+
+.game-date::before {
+  content: '⏱';
+  position: absolute;
+  left: 0;
+  font-size: 0.8rem;
 }
 
 .game-stats {
@@ -187,6 +239,10 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
   margin-top: 15px;
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 10px;
+  border-radius: 0;
+  border-left: 3px solid rgba(231, 76, 60, 0.3);
 }
 
 .stat {
@@ -196,16 +252,39 @@
 }
 
 .stat-label {
-  color: #7f8c8d;
+  color: #5a6268;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
 }
 
 .stat-value {
   font-weight: bold;
   color: #2c3e50;
+  font-family: 'Orbitron', sans-serif;
 }
 
 .status-active {
   color: #e74c3c;
+  position: relative;
+  padding-left: 15px;
+}
+
+.status-active::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  font-size: 1.5rem;
+  line-height: 0;
+  top: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
 }
 
 .status-finished {
@@ -214,14 +293,14 @@
 
 .game-actions {
   padding: 15px 20px;
-  background-color: #f8f9fa;
+  background-color: rgba(0, 0, 0, 0.05);
   display: flex;
   justify-content: center;
 }
 
 .btn-resume, .btn-view-details {
   border: none;
-  border-radius: 50px;
+  border-radius: 0;
   padding: 10px 20px;
   cursor: pointer;
   width: 100%;
@@ -230,6 +309,9 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   font-size: 0.9rem;
+  font-family: 'Exo 2', sans-serif;
+  position: relative;
+  clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
 }
 
 .btn-resume {
@@ -244,13 +326,13 @@
 }
 
 .btn-view-details {
-  background-color: #ecf0f1;
-  color: #2c3e50;
-  border: 1px solid #bdc3c7;
+  background-color: #333;
+  color: #fff;
+  border: 1px solid #222;
 }
 
 .btn-view-details:hover {
-  background-color: #bdc3c7;
+  background-color: #444;
   transform: scale(1.03);
 }
 

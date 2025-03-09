@@ -369,9 +369,10 @@ body {
   border-bottom: 2px solid var(--accent);
   padding-bottom: 8px;
   font-family: 'Orbitron', sans-serif;
+  color: rgb(255, 0, 0);
   text-transform: uppercase;
   letter-spacing: 1px;
-  text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+  text-shadow: 0 0 5px rgba(255, 238, 0, 0.192);
 }
 
 .game-stats ul {
@@ -385,6 +386,7 @@ body {
   position: relative;
   display: flex;
   align-items: center;
+  color: whitesmoke;
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
 }
 
@@ -405,7 +407,7 @@ body {
 
 .ships-status h4 {
   margin-bottom: 15px;
-  color: var(--accent);
+  color: rgb(255, 0, 0);
   font-family: 'Orbitron', sans-serif;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -413,6 +415,7 @@ body {
 }
 
 .fleet-status {
+  color: whitesmoke;
   margin-top: 15px;
 }
 
@@ -474,7 +477,7 @@ body {
 .ship-icon {
   width: 40px;
   height: 18px;
-  background-color: var(--navy-light);
+  background-color: var(--fire-light);
   position: relative;
   border-radius: 3px;
   transition: all 0.5s;
@@ -488,18 +491,18 @@ body {
   left: 40%;
   width: 20%;
   height: 7px;
-  background-color: var(--navy-light);
+  background-color: var(--fire-light);
   border-radius: 1px 1px 0 0;
 }
 
 .ship-icon.destroyed {
-  background-color: var(--fire-dark);
+  background-color: var(--fire-light);
   transform: rotate(15deg) translateY(3px);
   box-shadow: 0 0 10px rgba(198, 40, 40, 0.5);
 }
 
 .ship-icon.destroyed::before {
-  background-color: var(--fire-dark);
+  background-color: var(--fire-light);
 }
 
 .ship-smoke {
@@ -1052,6 +1055,7 @@ body {
 
 /* Enhanced Legend */
 .legend {
+  color: whitesmoke;
   display: flex;
   gap: 30px;
   margin-top: 30px;
