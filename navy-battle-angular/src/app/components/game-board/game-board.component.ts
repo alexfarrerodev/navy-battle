@@ -10,7 +10,7 @@ import { interval, Subscription } from 'rxjs';
   standalone: true,
   imports: [CommonModule, HttpClientModule, RouterModule],
   templateUrl: './game-board.component.html',
-  styleUrl: './game-board.component.css',
+  styleUrls: ['./game-board.component.css', './game-board-messages.component.css'],
   providers: [NavalApiService]
 })
 export class GameBoardComponent implements OnInit, OnDestroy {
@@ -141,47 +141,65 @@ export class GameBoardComponent implements OnInit, OnDestroy {
     }
   }
   
-  // Método para formatear el tiempo en horas, minutos y segundos
+  // Método para formatear el tiempo en horas, minutos y segundos con 2 decimales exactos
   formatTimeElapsed(seconds: number): string {
     if (seconds < 60) {
-      return `${seconds}s`;
+      // Para segundos solos, mostrar con 2 decimales
+      return `${seconds.toFixed(2)}s`;
     } else if (seconds < 3600) {
       const minutes = Math.floor(seconds / 60);
-      const remainingSeconds = seconds % 60;
+      // Obtener los segundos restantes y formatear con 2 decimales exactos
+      const remainingSeconds = (seconds % 60).toFixed(2);
       return `${minutes}m ${remainingSeconds}s`;
     } else {
       const hours = Math.floor(seconds / 3600);
       const remainingMinutes = Math.floor((seconds % 3600) / 60);
-      const remainingSeconds = seconds % 60;
+      // Obtener los segundos restantes y formatear con 2 decimales exactos
+      const remainingSeconds = (seconds % 60).toFixed(2);
       return `${hours}h ${remainingMinutes}m ${remainingSeconds}s`;
     }
   }
   
-  // Método para iniciar el temporizador
+  // Método para iniciar el temporizador en cuenta regresiva con precisión controlada
   startTimer(initialSeconds: number): void {
     // Detener cualquier temporizador activo
     if (this.timerSubscription) {
       this.timerSubscription.unsubscribe();
     }
     
-    // Calcular el tiempo inicial basado en los segundos proporcionados
-    this.gameStartTime = Date.now() - (initialSeconds * 1000);
+    // Guardar el tiempo inicial para la cuenta regresiva
+    const startTimeValue = initialSeconds;
+    
+    // Guardar el momento de inicio para cálculos precisos
+    this.gameStartTime = Date.now();
     
     // Formatear el tiempo inicial
-    this.formattedTime = this.formatTimeElapsed(initialSeconds);
+    this.formattedTime = this.formatTimeElapsed(startTimeValue);
     
-    // Iniciar un timer que se actualiza cada segundo
-    this.timerSubscription = interval(1000).subscribe(() => {
+    // Actualizar cada 100ms para mayor precisión en los decimales
+    this.timerSubscription = interval(100).subscribe(() => {
       if (!this.isGameOver) {
-        // Calcular tiempo transcurrido en segundos
-        const elapsedSeconds = Math.floor((Date.now() - this.gameStartTime) / 1000);
+        // Calcular segundos transcurridos desde el inicio con precisión controlada
+        const secondsPassed = (Date.now() - this.gameStartTime) / 1000;
+        
+        // Calcular tiempo restante (cuenta regresiva) y redondear a 2 decimales para evitar números extraños
+        const remainingSeconds = Math.max(0, startTimeValue - secondsPassed);
+        // Redondear a 2 decimales para evitar números extraños debido a imprecisiones de punto flotante
+        const roundedRemainingSeconds = Math.round(remainingSeconds * 100) / 100;
         
         // Actualizar el tiempo formateado
-        this.formattedTime = this.formatTimeElapsed(elapsedSeconds);
+        this.formattedTime = this.formatTimeElapsed(roundedRemainingSeconds);
         
         // Actualizar el valor en el gameState para mantener la consistencia
         if (this.gameState) {
-          this.gameState.time_elapsed = elapsedSeconds;
+          this.gameState.time_elapsed = roundedRemainingSeconds;
+        }
+        
+        // Si el tiempo llega a cero (o muy cercano), podríamos realizar alguna acción
+        if (roundedRemainingSeconds < 0.1 && !this.isGameOver) {
+          // Por ejemplo, podríamos mostrar un mensaje o abandonar el juego
+          // this.message = "¡Tiempo agotado!";
+          // this.finishGame();
         }
       }
     });
@@ -271,9 +289,12 @@ export class GameBoardComponent implements OnInit, OnDestroy {
         this.updateBoardFromResumedState(resumedState.board);
       }
       
-      // Show resume message
-      this.message = resumedState.message || 'Battle resumed successfully';
+      // Limpiar cualquier error o advertencia
+      this.error = null;
       this.warningMessage = null;
+      
+      // Show resume message
+      this.message = resumedState.message || 'Battle resumed successfully! Select coordinates to fire.';
       
       this.isLoading = false;
       
@@ -473,11 +494,15 @@ export class GameBoardComponent implements OnInit, OnDestroy {
 
   createNewGame(): void {
     this.isLoading = true;
+    // Limpiar todos los mensajes previos
     this.warningMessage = null;
+    this.error = null;
+    this.message = "Preparing new battle...";
+    
     this.navalApiService.startGame().subscribe({
       next: (response) => {
         this.gameId = response.game.game_id;
-        this.message = response.message;
+        this.message = response.message || "Battle stations ready! Select coordinates to fire.";
         
         // Reset the board state
         this.initializeEmptyBoard();
@@ -509,6 +534,9 @@ export class GameBoardComponent implements OnInit, OnDestroy {
     if (cellState && cellState.hit) {
       // If cell has already been hit, show a warning message
       this.warningMessage = "This cell has already been targeted. Try a different position.";
+      // Limpiar el mensaje normal para que solo se muestre la advertencia
+      this.message = null;
+      this.error = null;
       return;
     }
     
@@ -518,8 +546,10 @@ export class GameBoardComponent implements OnInit, OnDestroy {
     // Add visual effects for targeting
     this.addTargetingEffect(x, y);
     
-    // Clear the warning message when firing at a valid cell
+    // Clear all messages when firing at a valid cell
     this.warningMessage = null;
+    this.error = null;
+    this.message = "Firing torpedo...";
     this.selectedCell = { x, y };
     
     // Fire shot at selected coordinates
@@ -585,6 +615,10 @@ export class GameBoardComponent implements OnInit, OnDestroy {
         if (error && typeof error === 'string' && error.includes('already shot')) {
           // Show warning message without clearing the regular message
           this.warningMessage = "This cell has already been targeted. Try a different position.";
+          // Mantener el mensaje anterior si existe
+          if (!this.message) {
+            this.message = "Select coordinates to fire.";
+          }
         } else {
           // For other errors, use the normal handler
           this.handleError('Error firing shot', error);
@@ -784,7 +818,21 @@ export class GameBoardComponent implements OnInit, OnDestroy {
   handleError(message: string, error: any): void {
     this.isLoading = false;
     this.error = `${message}: ${error.message || 'Unknown error'}`;
+    // Limpiar los otros mensajes para que solo se muestre el error
+    this.message = null;
+    this.warningMessage = null;
     console.error(this.error, error);
+    
+    // Configurar un temporizador para limpiar automáticamente el error después de 8 segundos
+    setTimeout(() => {
+      if (this.error) {
+        this.error = null;
+        // Restaurar un mensaje predeterminado
+        if (!this.message && !this.isGameOver) {
+          this.message = "Awaiting your command, Captain!";
+        }
+      }
+    }, 8000);
   }
 
   // This function helps Angular maintain row identity during updates
