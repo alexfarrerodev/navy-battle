@@ -36,6 +36,7 @@ export class GamesComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadAllGames();
+    this.checkLoginStatus()
   }
 
   loadAllGames(): void {
