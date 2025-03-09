@@ -1,66 +1,97 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Batalla Naval API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Este repositorio contiene una API para el juego de Batalla Naval desarrollada con Laravel 12.
 
-## About Laravel
+## Requisitos
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP 8.2 o superior
+- Composer
+- MySQL/MariaDB
+- Node.js y npm (para el frontend, si aplica)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Instalación y Ejecución
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Inicio Rápido
 
-## Learning Laravel
+Para ejecutar la aplicación completa:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+1. Navega al directorio raíz del proyecto (directorio padre):
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+```bash
+cd ../
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+2. Ejecuta el script de inicialización con el parámetro "all":
 
-## Laravel Sponsors
+```bash
+./run-all.sh all
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Este comando configurará y lanzará todos los componentes necesarios para la aplicación.
 
-### Premium Partners
+### Opciones del Script
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+Para ver todas las opciones disponibles del script de ejecución:
 
-## Contributing
+```bash
+./run-all.sh
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Esto mostrará la ayuda con todas las opciones y comandos disponibles.
 
-## Code of Conduct
+## Pruebas con Postman
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Se incluyen colecciones de Postman para probar todos los endpoints de la API:
 
-## Security Vulnerabilities
+### Ubicación de los Archivos
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+cd navy-battle-laravel/POSTMAN-TESTS-EXPORTS
+```
 
-## License
+### Importar en Postman
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+1. Abre Postman
+2. Haz clic en "Import" (botón superior izquierdo)
+3. Selecciona los archivos de la carpeta POSTMAN-TESTS-EXPORTS
+4. Importa tanto la colección como el entorno (si está disponible)
+
+### Configuración del Entorno
+
+Para probar la API correctamente:
+
+1. Configura la variable de entorno `base_url` con la URL correcta de tu API (por defecto: `http://localhost:8000/api`)
+2. Las variables `token` y `game_id` se actualizarán automáticamente durante la ejecución de las pruebas
+
+### Secuencia de Pruebas Recomendada
+
+1. Registra un usuario o inicia sesión (Autenticación > Registro/Login)
+2. El token se guardará automáticamente
+3. Inicia un nuevo juego (Juegos > Iniciar Nuevo Juego)
+4. Realiza disparos y comprueba el estado del juego
+5. Explora el resto de endpoints según necesites
+
+## Estructura de la API
+
+La API sigue una estructura RESTful con los siguientes grupos principales de endpoints:
+
+- **Autenticación**: Registro, login, logout y datos del usuario actual
+- **Usuarios**: Gestión de usuarios y estadísticas
+- **Juegos**: Creación, listado y detalles de juegos
+- **Juego en Curso**: Interacción con un juego activo (disparos, estado, tablero)
+- **Rankings**: Consulta de clasificaciones
+
+## Notas Adicionales
+
+- La API utiliza autenticación con tokens JWT mediante Laravel Sanctum
+- Todos los endpoints protegidos requieren un token válido en el header de Authorization
+- Para más detalles sobre cada endpoint, consulta la documentación incluida en la colección de Postman
+
+## Solución de Problemas
+
+Si encuentras problemas al ejecutar los tests de Postman:
+
+1. Verifica que la API esté en funcionamiento
+2. Comprueba que la URL base sea correcta
+3. Asegúrate de que el token se está guardando correctamente después del login
+4. Revisa la consola de Postman para ver mensajes de error detallados
