@@ -1,0 +1,834 @@
+{
+	"info": {
+		"_postman_id": "8f7a5d95-c392-4b56-ac56-18d23f8ddcc3",
+		"name": "Batalla Naval API",
+		"description": "Colección para probar todas las rutas de la API de Batalla Naval",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Autenticación",
+			"item": [
+				{
+					"name": "Registro",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.access_token) {",
+									"    pm.environment.set(\"token\", jsonData.access_token);",
+									"    console.log(\"Token guardado: \" + jsonData.access_token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"jugador1\",\n    \"email\": \"jugador1@ejemplo.com\",\n    \"password\": \"contraseña123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						},
+						"description": "Registrar un nuevo usuario"
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.access_token) {",
+									"    pm.environment.set(\"token\", jsonData.access_token);",
+									"    console.log(\"Token guardado: \" + jsonData.access_token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"jugador1@ejemplo.com\",\n    \"password\": \"contraseña123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Iniciar sesión y obtener token"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Usuario Actual",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/auth/me",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"me"
+							]
+						},
+						"description": "Obtener información del usuario autenticado"
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/auth/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"logout"
+							]
+						},
+						"description": "Cerrar sesión"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints relacionados con autenticación"
+		},
+		{
+			"name": "Usuarios",
+			"item": [
+				{
+					"name": "Listar Usuarios",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users"
+							]
+						},
+						"description": "Obtener lista de todos los usuarios"
+					},
+					"response": []
+				},
+				{
+					"name": "Ver Usuario",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"1"
+							]
+						},
+						"description": "Ver detalles de un usuario específico"
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Usuario",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"jugador1_actualizado\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"1"
+							]
+						},
+						"description": "Actualizar datos de un usuario"
+					},
+					"response": []
+				},
+				{
+					"name": "Ver Estadísticas Usuario",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/1/stats",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"1",
+								"stats"
+							]
+						},
+						"description": "Ver estadísticas de un usuario"
+					},
+					"response": []
+				},
+				{
+					"name": "Ver Ranking Usuario",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/1/ranking",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"1",
+								"ranking"
+							]
+						},
+						"description": "Ver ranking de un usuario"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints relacionados con usuarios"
+		},
+		{
+			"name": "Juegos",
+			"item": [
+				{
+					"name": "Iniciar Nuevo Juego",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.game && jsonData.game.game_id) {",
+									"    pm.environment.set(\"game_id\", jsonData.game.game_id);",
+									"    console.log(\"Game ID guardado: \" + jsonData.game.game_id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/games/start",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"games",
+								"start"
+							]
+						},
+						"description": "Iniciar un nuevo juego con barcos colocados automáticamente"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Todos los Juegos",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/games",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"games"
+							]
+						},
+						"description": "Listar todos los juegos disponibles"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Juegos Activos",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/games/status/active",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"games",
+								"status",
+								"active"
+							]
+						},
+						"description": "Listar juegos activos"
+					},
+					"response": []
+				},
+				{
+					"name": "Ver Juego Específico",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/games/{{game_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"games",
+								"{{game_id}}"
+							]
+						},
+						"description": "Ver detalles de un juego específico"
+					},
+					"response": []
+				},
+				{
+					"name": "Historial de Juegos",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/games/history/all",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"games",
+								"history",
+								"all"
+							]
+						},
+						"description": "Ver historial de todos los juegos del usuario"
+					},
+					"response": []
+				},
+				{
+					"name": "Juegos Activos del Usuario",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/games/history/active",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"games",
+								"history",
+								"active"
+							]
+						},
+						"description": "Ver juegos activos del usuario"
+					},
+					"response": []
+				},
+				{
+					"name": "Juegos Completados del Usuario",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/games/history/completed",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"games",
+								"history",
+								"completed"
+							]
+						},
+						"description": "Ver juegos completados del usuario"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints relacionados con juegos"
+		},
+		{
+			"name": "Juego en Curso",
+			"item": [
+				{
+					"name": "Colocar Barcos Automáticamente",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/games/{{game_id}}/auto-place-ships",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"games",
+								"{{game_id}}",
+								"auto-place-ships"
+							]
+						},
+						"description": "Colocar barcos automáticamente en un juego"
+					},
+					"response": []
+				},
+				{
+					"name": "Disparar",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"x\": 5,\n    \"y\": 3\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/games/{{game_id}}/fire",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"games",
+								"{{game_id}}",
+								"fire"
+							]
+						},
+						"description": "Realizar un disparo en una posición determinada"
+					},
+					"response": []
+				},
+				{
+					"name": "Ver Estado del Juego",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/games/{{game_id}}/state",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"games",
+								"{{game_id}}",
+								"state"
+							]
+						},
+						"description": "Ver estado actual del juego"
+					},
+					"response": []
+				},
+				{
+					"name": "Ver Tablero",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/games/{{game_id}}/board",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"games",
+								"{{game_id}}",
+								"board"
+							]
+						},
+						"description": "Ver el tablero actual revelado"
+					},
+					"response": []
+				},
+				{
+					"name": "Reanudar Juego",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/games/{{game_id}}/resume",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"games",
+								"{{game_id}}",
+								"resume"
+							]
+						},
+						"description": "Reanudar un juego en curso"
+					},
+					"response": []
+				},
+				{
+					"name": "Abandonar Juego",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/games/{{game_id}}/abandon",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"games",
+								"{{game_id}}",
+								"abandon"
+							]
+						},
+						"description": "Abandonar un juego en curso (temporalmente)"
+					},
+					"response": []
+				},
+				{
+					"name": "Finalizar Juego",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/games/{{game_id}}/finish",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"games",
+								"{{game_id}}",
+								"finish"
+							]
+						},
+						"description": "Finalizar/Eliminar un juego"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para interactuar con un juego en curso"
+		},
+		{
+			"name": "Rankings",
+			"item": [
+				{
+					"name": "Ver Rankings",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/rankings",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"rankings"
+							]
+						},
+						"description": "Ver tabla de rankings general"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints relacionados con rankings"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000/api",
+			"type": "string"
+		}
+	]
+}
